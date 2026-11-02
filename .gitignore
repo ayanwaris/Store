@@ -1,0 +1,140 @@
+
+# ==========================================
+# DEPENDENCIES
+# ==========================================
+node_modules/
+jspm_packages/
+bower_components/
+web_modules/
+
+# ==========================================
+# ENVIRONMENT VARIABLES (IMPORTANT)
+# ==========================================
+.env
+.env.*
+!.env.example
+
+# ==========================================
+# NEXT.JS
+# ==========================================
+.next/
+out/
+next-env.d.ts
+
+# ==========================================
+# NODE.JS
+# ==========================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+*.log
+logs/
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# ==========================================
+# TYPESCRIPT
+# ==========================================
+*.tsbuildinfo
+
+# ==========================================
+# BUILD OUTPUT
+# ==========================================
+dist/
+build/
+coverage/
+.nyc_output/
+*.lcov
+
+# ==========================================
+# TAILWIND CSS / CSS TOOLING
+# ==========================================
+# Keep Tailwind config and source files tracked.
+# Ignore only generated build output covered above.
+
+# ==========================================
+# DRIZZLE ORM / DATABASE
+# ==========================================
+# Keep drizzle.config.ts and drizzle migrations.
+# Ignore local database files and debug output.
+drizzle-error.txt
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# ==========================================
+# CACHE FILES
+# ==========================================
+.cache/
+.parcel-cache/
+.turbo/
+.vercel/
+.npm/
+.eslintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# ==========================================
+# PYTHON (IF USED BY SCRIPTS)
+# ==========================================
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ==========================================
+# IDE / EDITORS
+# ==========================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+
+# ==========================================
+# PACKAGE MANAGERS
+# ==========================================
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ==========================================
+# DEPLOYMENT / LOCAL FILES
+# ==========================================
+.vercel
+YOUR_ACTUAL_FOLDER_PATH_HERE/
+
+# ==========================================
+# TESTING
+# ==========================================
+playwright-report/
+test-results/
+.nyc_output/
+
