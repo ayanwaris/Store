@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, PlusCircle, Trash2, Pencil, Eye, EyeOff, X } from "lucide-react";
+import SortableList from "@/components/admin/SortableList";
+import { CATEGORY_ICON_NAMES, getCategoryIcon } from "@/lib/category-icons";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type Cat = { id: string; name: string; slug: string; icon: string; blurb: string };
+type Cat = { id: string; name: string; slug: string; icon: string; blurb: string; imageUrl: string; href: string; active: boolean };
 type Bnr = { id: string; title: string; subtitle: string; ctaText: string; ctaHref: string; hue: number; active: boolean; position: number };
 
-const ICONS = ["Gamepad2", "Gift", "AppWindow", "BadgeCheck", "Coins", "Puzzle"];
+const EMPTY_CAT = { name: "", icon: "Gamepad2", blurb: "", imageUrl: "", href: "", active: true };
 
 async function call(method: string, url: string, body?: unknown) {
   const res = await fetch(url, {
@@ -25,7 +27,9 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
   const [busy, setBusy] = useState(false);
   const [editCat, setEditCat] = useState<Cat | null>(null);
   const [showCatForm, setShowCatForm] = useState(false);
-  const [catForm, setCatForm] = useState({ name: "", icon: "Gamepad2", blurb: "" });
+  const [catForm, setCatForm] = useState(EMPTY_CAT);
+  const [order, setOrder] = useState<Cat[] | null>(null); // optimistic order while a drag/move is saved
+  const list = order ?? categories;
   const [showBnrForm, setShowBnrForm] = useState(false);
   const [bnrForm, setBnrForm] = useState({ title: "", subtitle: "", ctaText: "", ctaHref: "", hue: 265 });
   const [bnrEdit, setBnrEdit] = useState<Bnr | null>(null);
@@ -47,27 +51,55 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
       <div className="card p-5">
         <div className="flex items-center justify-between">
           <h3 className="font-display font-bold">Categories</h3>
-          <button className="btn btn-outline btn-sm" onClick={() => { setShowCatForm(true); setEditCat(null); setCatForm({ name: "", icon: "Gamepad2", blurb: "" }); }}>
+          <button className="btn btn-outline btn-sm" onClick={() => { setShowCatForm(true); setEditCat(null); setCatForm(EMPTY_CAT); }}>
             <PlusCircle size={13} /> Add
           </button>
         </div>
-        <ul className="mt-3 divide-y divide-line-soft">
-          {categories.map((c) => (
-            <li key={c.id} className="flex items-center gap-3 py-2.5">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">{c.name}</p>
-                <p className="truncate text-[11px] text-faint">/{c.slug} · icon {c.icon}</p>
+        <p className="mt-1 text-xs text-faint">Drag to reorder (or use the arrows). Disabled categories are hidden from the menu, footer and homepage.</p>
+        <SortableList
+          className="mt-3"
+          items={list}
+          disabled={busy}
+          onReorder={async (next) => {
+            setOrder(next);
+            try {
+              await call("POST", "/api/admin/categories/reorder", { ids: next.map((c) => c.id) });
+              toast.success("Order saved");
+              router.refresh();
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Could not save order");
+            } finally { setOrder(null); }
+          }}
+          render={({ item: c, controls }) => {
+            const Icon = getCategoryIcon(c.icon);
+            return (
+              <div className={cn("flex items-center gap-2 p-2.5", !c.active && "opacity-55")}>
+                {controls}
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-brand">
+                  {c.imageUrl
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={c.imageUrl} alt="" width={18} height={18} className="h-[18px] w-[18px] object-contain" />
+                    : <Icon size={17} />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{c.name}{!c.active && <span className="ml-2 text-[10px] font-bold uppercase text-faint">Hidden</span>}</p>
+                  <p className="truncate text-[11px] text-faint">{c.href || `/category/${c.slug}`}</p>
+                </div>
+                <button className="btn btn-ghost btn-sm" aria-label={c.active ? "Disable category" : "Enable category"} disabled={busy}
+                  onClick={() => run(async () => { await call("PATCH", `/api/admin/categories/${c.id}`, { active: !c.active }); }, c.active ? "Category hidden" : "Category visible")}>
+                  {c.active ? <Eye size={13} /> : <EyeOff size={13} />}
+                </button>
+                <button className="btn btn-ghost btn-sm" aria-label="Edit" onClick={() => { setEditCat(c); setCatForm({ name: c.name, icon: c.icon, blurb: c.blurb, imageUrl: c.imageUrl, href: c.href, active: c.active }); setShowCatForm(true); }}>
+                  <Pencil size={13} />
+                </button>
+                <button className="btn btn-danger btn-sm" aria-label="Delete" disabled={busy}
+                  onClick={() => { if (confirm(`Delete "${c.name}"? Products in it become uncategorised.`)) run(async () => { await call("DELETE", `/api/admin/categories/${c.id}`); }, "Category deleted"); }}>
+                  <Trash2 size={13} />
+                </button>
               </div>
-              <button className="btn btn-ghost btn-sm" aria-label="Edit" onClick={() => { setEditCat(c); setCatForm({ name: c.name, icon: c.icon, blurb: c.blurb }); setShowCatForm(true); }}>
-                <Pencil size={13} />
-              </button>
-              <button className="btn btn-danger btn-sm" aria-label="Delete" disabled={busy}
-                onClick={() => run(async () => { await call("DELETE", `/api/admin/categories/${c.id}`); }, "Category deleted")}>
-                <Trash2 size={13} />
-              </button>
-            </li>
-          ))}
-        </ul>
+            );
+          }}
+        />
       </div>
 
       {/* ------------------------------- banners ------------------------------- */}
@@ -111,13 +143,25 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
             <div>
               <label className="label">Icon</label>
               <select className="select" value={catForm.icon} onChange={(e) => setCatForm({ ...catForm, icon: e.target.value })}>
-                {ICONS.map((i) => <option key={i}>{i}</option>)}
+                {CATEGORY_ICON_NAMES.map((i) => <option key={i}>{i}</option>)}
               </select>
             </div>
             <div>
-              <label className="label">Blurb</label>
+              <label className="label">Custom image URL <span className="font-normal text-faint">(optional — replaces the icon)</span></label>
+              <input className="input" value={catForm.imageUrl} placeholder="https://… or /img/games.svg" onChange={(e) => setCatForm({ ...catForm, imageUrl: e.target.value })} />
+            </div>
+            <div>
+              <label className="label">Description</label>
               <input className="input" value={catForm.blurb} onChange={(e) => setCatForm({ ...catForm, blurb: e.target.value })} />
             </div>
+            <div>
+              <label className="label">Custom link <span className="font-normal text-faint">(optional — default /category/{editCat?.slug ?? "name"})</span></label>
+              <input className="input" value={catForm.href} placeholder="/category/games" onChange={(e) => setCatForm({ ...catForm, href: e.target.value })} />
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={catForm.active} onChange={(e) => setCatForm({ ...catForm, active: e.target.checked })} className="accent-[var(--kh-brand)]" />
+              Visible on the storefront
+            </label>
           </div>
           <button className="btn btn-primary mt-5 w-full" disabled={busy || catForm.name.length < 2}
             onClick={() => run(async () => {
@@ -141,7 +185,7 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
             </div>
             <div>
               <label className="label">Accent hue: {bnrForm.hue}</label>
-              <input type="range" min={0} max={359} value={bnrForm.hue} onChange={(e) => setBnrForm({ ...bnrForm, hue: Number(e.target.value) })} className="w-full accent-orange-500" />
+              <input type="range" min={0} max={359} value={bnrForm.hue} onChange={(e) => setBnrForm({ ...bnrForm, hue: Number(e.target.value) })} className="w-full accent-[var(--kh-brand)]" />
             </div>
           </div>
           <button className="btn btn-primary mt-5 w-full" disabled={busy || bnrForm.title.length < 2}

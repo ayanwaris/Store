@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { asc, desc, eq, sql } from "drizzle-orm";
+import { isSafeUrl } from "@/lib/site-config";
 import { db } from "@/db";
 import { banners, categories, coupons, products, settings } from "@/db/schema";
 import { ok, fail, parseJson, assertSameOrigin } from "@/lib/api";
@@ -155,7 +156,11 @@ function numify(...keys: string[]) {
 
 /* ------------------------------- create ops ------------------------------- */
 
-const CategoryCreate = z.object({ name: z.string().min(2).max(40), icon: z.string().max(30).optional(), blurb: z.string().max(160).optional() });
+const SafeUrl = z.string().max(500).refine(isSafeUrl, "Use a site path like /category/games or a full https:// URL");
+const CategoryCreate = z.object({
+  name: z.string().min(2).max(40), icon: z.string().max(30).optional(), blurb: z.string().max(160).optional(),
+  imageUrl: SafeUrl.optional().nullable(), href: SafeUrl.optional().nullable(), active: z.boolean().optional(),
+});
 const ProductCreate = z.object({
   title: z.string().min(2).max(120), subtitle: z.string().max(160).optional(),
   description: z.string().min(10).max(4000), howToActivate: z.string().max(1500).optional(),
@@ -198,7 +203,12 @@ export async function POST(
       if ((await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, slug)).limit(1))[0]) {
         slug = `${slug}-${Math.random().toString(36).slice(2, 5)}`;
       }
-      const [row] = await db.insert(categories).values({ ...data, slug }).returning();
+      // new categories go to the end of the menu
+      const [{ next }] = await db.select({ next: sql<number>`coalesce(max(${categories.position}), -1) + 1` }).from(categories);
+      const [row] = await db.insert(categories).values({
+        ...data, slug, position: Number(next),
+        imageUrl: data.imageUrl || null, href: data.href || null,
+      }).returning();
       await logAudit({ actorId: auth.user.id, action: "category.create", entity: "category", entityId: row.id, meta: { name: data.name } });
       return ok(row, { status: 201 });
     }

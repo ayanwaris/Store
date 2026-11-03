@@ -41,8 +41,14 @@ export const categories = pgTable("categories", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   icon: text("icon").notNull().default("Gamepad2"),
-  blurb: text("blurb"),
+  blurb: text("blurb"), // short description shown under the name
   position: integer("position").notNull().default(0),
+  /** optional custom artwork shown instead of the icon (https URL or site path) */
+  imageUrl: text("image_url"),
+  /** optional custom destination; falls back to /category/<slug> */
+  href: text("href"),
+  /** disabled categories are hidden from the menu, footer and homepage */
+  active: boolean("active").notNull().default(true),
 });
 
 export const products = pgTable("products", {
@@ -302,6 +308,14 @@ export const banners = pgTable("banners", {
   position: integer("position").notNull().default(0),
 });
 
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull(), // always stored lower-cased
+  status: text("status").notNull().default("active"), // active | unsubscribed
+  source: text("source").notNull().default("website"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("newsletter_email_unique").on(t.email)]);
+
 export const auditLogs = pgTable("audit_logs", {
   id: uuid("id").defaultRandom().primaryKey(),
   actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
@@ -338,3 +352,4 @@ export type Notification = typeof notifications.$inferSelect;
 export type SupportTicket = typeof supportTickets.$inferSelect;
 export type Payout = typeof payouts.$inferSelect;
 export type Banner = typeof banners.$inferSelect;
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;

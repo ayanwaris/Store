@@ -1,9 +1,9 @@
-import { asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { categories } from "@/db/schema";
 import { ok } from "@/lib/api";
 
 export async function GET() {
-  const rows = await db.select().from(categories).orderBy(asc(categories.position));
+  const rows = await db.select().from(categories).where(eq(categories.active, true)).orderBy(asc(categories.position));
   return ok(rows);
 }

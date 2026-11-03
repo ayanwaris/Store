@@ -15,7 +15,6 @@ export default function RatingStars({
             size={size}
             strokeWidth={0}
             className={i <= Math.round(value) ? "fill-amber-400" : "fill-line text-line"}
-            style={i > Math.round(value) ? { fill: "#2a3050" } : undefined}
           />
         ))}
       </span>

@@ -402,14 +402,24 @@ export type ProductCard = {
   platform: string; region: string; kind: string; genre: string | null;
   coverHue: number; rrp: number; ratingAvg: number; ratingCount: number;
   minPrice: number | null; offerCount: number; sold: number;
+  /** units currently in stock across active offers */
+  stock: number;
+  /** % positive rating of the seller offering the lowest price (null when unrated) */
+  sellerRating: number | null;
 };
 
 export async function getProductCards(opts: {
   categorySlug?: string; q?: string; platform?: string; region?: string; kind?: string;
   minPrice?: number; maxPrice?: number; sort?: string; featuredOnly?: boolean;
   limit?: number; offset?: number;
+  /** restrict to these product ids (used for hand-picked homepage sections) */
+  ids?: string[];
 }) {
   const conditions = [sql`p.active = true`];
+  if (opts.ids) {
+    if (opts.ids.length === 0) return [] as ProductCard[];
+    conditions.push(sql`p.id in (${sql.join(opts.ids.map((id) => sql`${id}::uuid`), sql`, `)})`);
+  }
   if (opts.categorySlug) conditions.push(sql`c.slug = ${opts.categorySlug}`);
   if (opts.q) conditions.push(sql`(p.title ilike ${"%" + opts.q + "%"} or p.subtitle ilike ${"%" + opts.q + "%"})`);
   if (opts.platform) conditions.push(sql`p.platform = ${opts.platform}`);
@@ -434,15 +444,19 @@ export async function getProductCards(opts: {
   const rows = await db.execute(sql`
     select p.id, p.slug, p.title, p.subtitle, p.platform, p.region, p.kind, p.genre,
            p.cover_hue as "coverHue", p.rrp, p.rating_avg as "ratingAvg", p.rating_count as "ratingCount",
-           s.min_price as "minPrice", coalesce(s.offer_count, 0)::int as "offerCount", coalesce(s.sold, 0)::int as sold
+           s.min_price as "minPrice", coalesce(s.offer_count, 0)::int as "offerCount", coalesce(s.sold, 0)::int as sold,
+           coalesce(s.stock, 0)::int as stock, s.seller_rating as "sellerRating"
     from products p
     left join categories c on c.id = p.category_id
     left join lateral (
-      select min(price) as min_price, count(*) as offer_count, sum(sold_count) as sold
+      select min(o.price) as min_price, count(*) as offer_count, sum(o.sold_count) as sold,
+             sum(o.stock_count) as stock,
+             (select sp.rating_avg from offers o2 join seller_profiles sp on sp.id = o2.seller_id
+               where o2.product_id = p.id and o2.active = true order by o2.price asc, sp.rating_avg desc limit 1) as seller_rating
       from offers o where o.product_id = p.id and o.active = true
     ) s on true
     where ${sql.join(conditions, sql` and `)}
-    group by p.id, c.slug, s.min_price, s.offer_count, s.sold
+    group by p.id, c.slug, s.min_price, s.offer_count, s.sold, s.stock, s.seller_rating
     ${havingSql}
     order by ${orderClause}
     limit ${opts.limit ?? 24} offset ${opts.offset ?? 0}
@@ -451,6 +465,7 @@ export async function getProductCards(opts: {
     ...r,
     rrp: Number(r.rrp), ratingAvg: Number(r.ratingAvg),
     minPrice: r.minPrice == null ? null : Number(r.minPrice),
+    sellerRating: r.sellerRating == null ? null : Number(r.sellerRating),
   })) as ProductCard[];
 }
 

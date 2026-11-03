@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { db } from "@/db";
-import { categories } from "@/db/schema";
-import { getProductCards, getProductCardsCount } from "@/lib/commerce";
+import { getBrowseCards, getBrowseCount, getBrowseFacets, parseList, type BrowseFilters } from "@/lib/browse";
 import ProductCard from "@/components/ProductCard";
-import FilterControls from "@/components/FilterControls";
-import { ArrowLeft, ArrowRight, SearchX } from "lucide-react";
+import BrowseShell, { type FacetGroup } from "@/components/browse/BrowseShell";
+import Pagination from "@/components/browse/Pagination";
+import { KIND_LABEL } from "@/lib/utils";
+import { SearchX } from "lucide-react";
 
 const PAGE_SIZE = 24;
 
@@ -17,73 +17,55 @@ export default async function SearchPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const sp = await searchParams;
-  const q = sp.q ?? "";
+  const q = (sp.q ?? "").trim();
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
-  const filters = {
+  const num = (v?: string) => (v && Number.isFinite(Number(v)) ? Number(v) : undefined);
+  const filters: BrowseFilters = {
     q: q || undefined,
-    platform: sp.platform, region: sp.region, kind: sp.kind,
-    minPrice: sp.min ? Number(sp.min) : undefined,
-    maxPrice: sp.max ? Number(sp.max) : undefined,
+    kind: parseList(sp.kind), platform: parseList(sp.platform), region: parseList(sp.region), genre: parseList(sp.genre),
+    minPrice: num(sp.min), maxPrice: num(sp.max),
     featuredOnly: sp.featured === "1" || undefined,
     sort: sp.sort ?? "popular",
   };
-  const [cards, total, cats] = await Promise.all([
-    getProductCards({ ...filters, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE }),
-    getProductCardsCount(filters),
-    db.select().from(categories),
+  const [cards, total, facets] = await Promise.all([
+    getBrowseCards(filters, PAGE_SIZE, (page - 1) * PAGE_SIZE),
+    getBrowseCount(filters),
+    getBrowseFacets(filters),
   ]);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const pageHref = (pn: number) => {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(sp)) if (v && k !== "page") params.set(k, v);
-    params.set("page", String(pn));
-    return `/search?${params.toString()}`;
-  };
+  const regionLabel = (v: string) => (v === "GLOBAL" ? "Global" : v);
+  const groups: FacetGroup[] = [
+    { key: "kind", title: "Type", limit: 8, options: facets.kind.map((f) => ({ value: f.value, label: KIND_LABEL[f.value] ?? f.value, count: f.count })) },
+    { key: "platform", title: "Platforms", limit: 8, options: facets.platform.map((f) => ({ value: f.value, label: f.value, count: f.count })) },
+    { key: "genre", title: "Genres", limit: 6, options: facets.genre.map((f) => ({ value: f.value, label: f.value, count: f.count })) },
+    { key: "region", title: "Regions", limit: 6, options: facets.region.map((f) => ({ value: f.value, label: regionLabel(f.value), count: f.count })) },
+  ];
 
   return (
     <div className="container-x py-8">
       <h1 className="font-display text-2xl font-bold md:text-3xl">
         {q ? <>Results for <span className="text-gradient">“{q}”</span></> : "Browse everything"}
       </h1>
-      <p className="mt-1 text-sm text-mute">{total} products found</p>
 
-      {!q && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {cats.map((c) => (
-            <Link key={c.slug} href={`/category/${c.slug}`} className="chip hover:border-brand/40 hover:text-brand-bright">
-              {c.name}
-            </Link>
-          ))}
-        </div>
-      )}
+      <BrowseShell current={sp} groups={groups} total={total}>
+        {cards.length === 0 ? (
+          <div className="card flex flex-col items-center p-14 text-center">
+            <SearchX size={40} className="text-faint" />
+            <p className="mt-4 font-display text-lg font-bold">No matches</p>
+            <p className="mt-1 max-w-sm text-sm text-mute">
+              We couldn&apos;t find anything for those filters. Try removing a filter or a broader search term.
+            </p>
+            <Link href={q ? `/search?q=${encodeURIComponent(q)}` : "/search"} className="btn btn-outline mt-5">Clear filters</Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+            {cards.map((p) => <ProductCard key={p.id} p={p} />)}
+          </div>
+        )}
 
-      <div className="mt-5">
-        <FilterControls current={sp} />
-      </div>
-
-      {cards.length === 0 ? (
-        <div className="card mt-6 flex flex-col items-center p-14 text-center">
-          <SearchX size={40} className="text-faint" />
-          <p className="mt-4 font-display text-lg font-bold">No matches</p>
-          <p className="mt-1 max-w-sm text-sm text-mute">
-            We couldn&apos;t find anything for those filters. Try a broader term or browse the categories above.
-          </p>
-          <Link href="/search" className="btn btn-outline mt-5">Clear search</Link>
-        </div>
-      ) : (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {cards.map((p) => <ProductCard key={p.id} p={p} />)}
-        </div>
-      )}
-
-      {pages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-3">
-          {page > 1 && <Link href={pageHref(page - 1)} className="btn btn-outline btn-sm"><ArrowLeft size={14} /> Prev</Link>}
-          <span className="text-sm text-mute">Page {page} of {pages}</span>
-          {page < pages && <Link href={pageHref(page + 1)} className="btn btn-outline btn-sm">Next <ArrowRight size={14} /></Link>}
-        </div>
-      )}
+        <Pagination basePath="/search" sp={sp} page={page} pages={pages} />
+      </BrowseShell>
     </div>
   );
 }

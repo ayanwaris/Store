@@ -1,51 +1,85 @@
 @import "tailwindcss";
 
+/*
+ * KEYHAVEN design system.
+ *
+ * Nothing in this file (or in any component) hard-codes a palette. Colours come from the
+ * `--kh-*` variables that src/lib/theme.ts generates from the active theme preset and the
+ * layout injects into <head>. Change the preset / colours / glass intensity there (or in
+ * Admin → Site & theme) and every page updates — light and dark.
+ */
+
 @theme {
-  --color-abyss: #05060b;
-  --color-panel: #0b0d17;
-  --color-card: #101321;
-  --color-raised: #181c31;
-  --color-line: #20253e;
-  --color-line-soft: #161b30;
+  --color-abyss: var(--kh-bg);
+  --color-panel: var(--kh-panel);
+  --color-card: var(--kh-card);
+  --color-raised: var(--kh-raised);
+  --color-line: var(--kh-line);
+  --color-line-soft: var(--kh-line-soft);
 
-  --color-brand: #ff7a1a;
-  --color-brand-bright: #ffa04d;
-  --color-brand-deep: #e35d04;
-  --color-vio: #7c6cff;
-  --color-mint: #34d399;
+  --color-brand: var(--kh-brand);
+  --color-brand-bright: var(--kh-brand-bright);
+  --color-brand-deep: var(--kh-brand-deep);
+  --color-on-brand: var(--kh-on-brand);
+  --color-vio: var(--kh-accent2);
+  --color-mint: var(--kh-success);
 
-  --color-ink: #f2f4fa;
-  --color-mute: #9aa3c0;
-  --color-faint: #5d6584;
+  --color-ink: var(--kh-ink);
+  --color-mute: var(--kh-mute);
+  --color-faint: var(--kh-faint);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
-  color-scheme: dark;
   scroll-behavior: smooth;
+  background: var(--kh-bg);
 }
 
 body {
-  background: var(--color-abyss);
-  color: var(--color-ink);
+  /* colour comes from <html> so the glass "orbs" layer (body::before) can sit between page colour and content */
+  background-color: transparent;
+  color: var(--kh-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   background-image:
-    radial-gradient(1200px 500px at 80% -10%, rgba(124, 108, 255, 0.08), transparent 60%),
-    radial-gradient(900px 420px at 10% -10%, rgba(255, 122, 26, 0.07), transparent 60%);
+    radial-gradient(1200px 520px at 82% -12%, var(--kh-glow-1), transparent 62%),
+    radial-gradient(900px 440px at 8% -12%, var(--kh-glow-2), transparent 62%);
   background-attachment: fixed;
+  overflow-x: clip; /* never allow sideways scrolling */
 }
 
-::selection {
-  background: rgba(255, 122, 26, 0.35);
+/* Soft coloured shapes fixed behind the whole page. Frosted-glass surfaces blur THESE, which is what makes the
+   Glass intensity slider visible. Opacity is driven by --kh-glass-orbs (0 when glass = 0). */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  opacity: var(--kh-glass-orbs, 0);
+  background:
+    radial-gradient(34rem 34rem at 12% 18%, color-mix(in srgb, var(--kh-brand) 60%, transparent), transparent 70%),
+    radial-gradient(40rem 40rem at 88% 34%, color-mix(in srgb, var(--kh-accent2) 55%, transparent), transparent 70%),
+    radial-gradient(36rem 36rem at 46% 92%, color-mix(in srgb, var(--kh-brand-bright) 50%, transparent), transparent 70%);
 }
+
+::selection { background: color-mix(in srgb, var(--kh-brand) 30%, transparent); }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #232848; border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: #2e3554; }
+::-webkit-scrollbar-thumb { background: var(--kh-line); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--kh-line) 60%, var(--kh-brand)); }
+
+:focus-visible { outline: 2px solid var(--kh-brand); outline-offset: 2px; border-radius: 6px; }
+
+/* ----------------- light-mode safe versions of "white overlay" utilities ----------------- */
+/* Components use bg-white/4 etc. as a subtle hover/tint layer. On a light theme a white tint is
+   invisible, so these map to the current text colour at the same low opacity instead. */
+.bg-white\/2, .hover\:bg-white\/2:hover { background-color: color-mix(in srgb, var(--kh-ink) 2.5%, transparent); }
+.bg-white\/3, .hover\:bg-white\/3:hover { background-color: color-mix(in srgb, var(--kh-ink) 3.5%, transparent); }
+.bg-white\/4, .hover\:bg-white\/4:hover { background-color: color-mix(in srgb, var(--kh-ink) 5%, transparent); }
+.bg-white\/5, .hover\:bg-white\/5:hover { background-color: color-mix(in srgb, var(--kh-ink) 6%, transparent); }
+.text-white\/6 { color: color-mix(in srgb, var(--kh-ink) 8%, transparent); }
+/* white text sitting on an accent fill must use the accent's readable colour */
+[class*="to-brand-deep"].text-white, [class*="bg-brand"].text-white { color: var(--kh-on-brand); }
 
 /* ------------------------------- components ------------------------------- */
 
@@ -57,94 +91,125 @@ body {
 }
 @media (min-width: 640px) { .container-x { padding-inline: 1.5rem; } }
 
+.bg-gold { background: linear-gradient(135deg, var(--kh-gold-a), var(--kh-gold-b)); }
+.text-on-brand { color: var(--kh-on-brand); }
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-  font-weight: 600; font-size: 0.875rem; border-radius: 0.75rem;
+  font-weight: 600; font-size: 0.875rem; border-radius: calc(var(--kh-radius) * 0.75);
   padding: 0.625rem 1.125rem; border: 1px solid transparent;
   transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1); cursor: pointer;
   white-space: nowrap; user-select: none;
 }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary {
-  background: linear-gradient(180deg, #ff8b34, #f2690a);
-  color: #fff; box-shadow: 0 8px 24px -8px rgba(255, 122, 26, 0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  background: linear-gradient(180deg, var(--kh-gold-a), var(--kh-gold-b));
+  color: var(--kh-on-brand);
+  box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--kh-brand-deep) 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.35);
 }
-.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 14px 32px -10px rgba(255, 122, 26, 0.7), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px); filter: brightness(1.05) saturate(1.05);
+  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--kh-brand-deep) 80%, transparent), inset 0 1px 0 rgba(255,255,255,0.4);
+}
 .btn-vio {
-  background: linear-gradient(180deg, #8b7dff, #6a57f5); color: #fff;
-  box-shadow: 0 8px 24px -8px rgba(124, 108, 255, 0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--kh-accent2) 88%, #fff), var(--kh-accent2));
+  color: var(--kh-on-accent2);
+  box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--kh-accent2) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.2);
 }
-.btn-vio:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-vio:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
 .btn-outline {
-  border-color: var(--color-line); background: rgba(255,255,255,0.02); color: var(--color-ink);
+  border-color: var(--kh-line); background: color-mix(in srgb, var(--kh-card) 55%, transparent); color: var(--kh-ink);
 }
-.btn-outline:hover:not(:disabled) { border-color: #3a4166; background: rgba(255,255,255,0.05); }
-.btn-ghost { color: var(--color-mute); }
-.btn-ghost:hover:not(:disabled) { color: var(--color-ink); background: rgba(255,255,255,0.06); }
-.btn-danger { background: rgba(244, 63, 94, 0.12); color: #fda4af; border-color: rgba(244, 63, 94, 0.25); }
-.btn-danger:hover:not(:disabled) { background: rgba(244, 63, 94, 0.2); }
-.btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8rem; border-radius: 0.625rem; }
-.btn-lg { padding: 0.875rem 1.5rem; font-size: 1rem; border-radius: 0.875rem; }
+.btn-outline:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--kh-brand) 55%, var(--kh-line));
+  background: color-mix(in srgb, var(--kh-brand) 7%, var(--kh-card));
+}
+.btn-ghost { color: var(--kh-mute); }
+.btn-ghost:hover:not(:disabled) { color: var(--kh-ink); background: color-mix(in srgb, var(--kh-ink) 6%, transparent); }
+.btn-danger {
+  background: color-mix(in srgb, var(--color-rose-400) 12%, transparent);
+  color: var(--color-rose-300);
+  border-color: color-mix(in srgb, var(--color-rose-400) 28%, transparent);
+}
+.btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--color-rose-400) 20%, transparent); }
+.btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8rem; border-radius: calc(var(--kh-radius) * 0.6); }
+.btn-lg { padding: 0.875rem 1.5rem; font-size: 1rem; border-radius: calc(var(--kh-radius) * 0.875); }
 
 .input, .select, .textarea {
-  width: 100%; background: #0d1020; border: 1px solid var(--color-line);
-  border-radius: 0.75rem; padding: 0.625rem 0.875rem; font-size: 0.9rem; color: var(--color-ink);
-  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  background: color-mix(in srgb, var(--kh-card) 80%, var(--kh-bg));
+  border: 1px solid var(--kh-line);
+  border-radius: calc(var(--kh-radius) * 0.75); padding: 0.625rem 0.875rem; font-size: 0.9rem; color: var(--kh-ink);
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s, background-color 0.3s;
 }
-.input::placeholder, .textarea::placeholder { color: var(--color-faint); }
+.input::placeholder, .textarea::placeholder { color: var(--kh-faint); }
 .input:focus, .select:focus, .textarea:focus {
-  border-color: rgba(255, 122, 26, 0.6);
-  box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.15);
+  border-color: color-mix(in srgb, var(--kh-brand) 70%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kh-brand) 18%, transparent);
 }
 .input:disabled { opacity: 0.6; }
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239aa3c0' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem;
 }
 
-.label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-mute); margin-bottom: 0.375rem; }
+.label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--kh-mute); margin-bottom: 0.375rem; }
 
+/* Frosted-glass surfaces — intensity is controlled by --kh-glass-blur / --kh-glass-card (Admin → Site & theme). */
 .card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0)) , var(--color-card);
-  border: 1px solid var(--color-line);
-  border-radius: 1rem;
+  background: var(--kh-glass-card);
+  border: 1px solid var(--kh-glass-border);
+  border-radius: var(--kh-radius);
+  -webkit-backdrop-filter: blur(calc(var(--kh-glass-blur) * 0.7)) saturate(var(--kh-glass-sat, 1));
+  backdrop-filter: blur(calc(var(--kh-glass-blur) * 0.7)) saturate(var(--kh-glass-sat, 1));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent), 0 10px 30px -22px var(--kh-shadow);
 }
 
 .glass {
-  background: rgba(8, 10, 18, 0.78);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: var(--kh-glass-bg);
+  -webkit-backdrop-filter: blur(var(--kh-glass-blur)) saturate(var(--kh-glass-sat, 1));
+  backdrop-filter: blur(var(--kh-glass-blur)) saturate(var(--kh-glass-sat, 1));
+}
+
+/* floating menus: near-opaque so text always stays readable on top of busy content */
+.popover {
+  background: color-mix(in srgb, var(--kh-card) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--kh-brand) 22%, var(--kh-line));
+  border-radius: var(--kh-radius);
+  -webkit-backdrop-filter: blur(var(--kh-glass-blur)) saturate(1.4);
+  backdrop-filter: blur(var(--kh-glass-blur)) saturate(1.4);
+  box-shadow: 0 28px 60px -24px var(--kh-shadow), inset 0 1px 0 color-mix(in srgb, #fff 12%, transparent);
 }
 
 .chip {
   display: inline-flex; align-items: center; gap: 0.3rem;
   font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
   padding: 0.2rem 0.55rem; border-radius: 999px;
-  border: 1px solid var(--color-line); color: var(--color-mute);
-  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--kh-line); color: var(--kh-mute);
+  background: color-mix(in srgb, var(--kh-ink) 3%, transparent);
 }
 
 .table-x { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .table-x th {
   text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--color-faint); font-weight: 700; padding: 0.625rem 0.875rem;
-  border-bottom: 1px solid var(--color-line);
+  color: var(--kh-faint); font-weight: 700; padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--kh-line);
 }
-.table-x td { padding: 0.75rem 0.875rem; border-bottom: 1px solid var(--color-line-soft); vertical-align: middle; }
+.table-x td { padding: 0.75rem 0.875rem; border-bottom: 1px solid var(--kh-line-soft); vertical-align: middle; }
 .table-x tr:last-child td { border-bottom: none; }
 .table-x tbody tr { transition: background 0.15s; }
-.table-x tbody tr:hover { background: rgba(255,255,255,0.02); }
+.table-x tbody tr:hover { background: color-mix(in srgb, var(--kh-ink) 3%, transparent); }
 
-.link { color: var(--color-mute); transition: color 0.15s; }
-.link:hover { color: var(--color-brand-bright); }
+.link { color: var(--kh-mute); transition: color 0.15s; }
+.link:hover { color: var(--kh-brand-bright); }
 
 .skeleton {
-  position: relative; overflow: hidden; background: var(--color-raised); border-radius: 0.75rem;
+  position: relative; overflow: hidden; background: var(--kh-raised); border-radius: 0.75rem;
 }
 .skeleton::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kh-ink) 8%, transparent), transparent);
   animation: shimmer 1.4s infinite;
   transform: translateX(-100%);
 }
@@ -163,26 +228,26 @@ body {
 }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes popIn {
-  0% { opacity: 0; transform: scale(0.96) translateY(6px); }
+  0% { opacity: 0; transform: scale(0.97) translateY(6px); }
   100% { opacity: 1; transform: none; }
 }
 
 .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .animate-fade-in { animation: fadeIn 0.5s ease both; }
-.animate-pop { animation: popIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-pop { animation: popIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .animate-float { animation: floatY 6s ease-in-out infinite; }
 .d1 { animation-delay: 0.08s; } .d2 { animation-delay: 0.16s; }
 .d3 { animation-delay: 0.24s; } .d4 { animation-delay: 0.32s; }
 
-.hover-lift { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s, border-color 0.25s; }
+.hover-lift { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s, border-color 0.25s, background-color 0.3s; }
 .hover-lift:hover {
   transform: translateY(-4px);
-  border-color: #333b63;
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 122, 26, 0.08), 0 8px 30px -12px rgba(255, 122, 26, 0.25);
+  border-color: color-mix(in srgb, var(--kh-brand) 50%, var(--kh-line));
+  box-shadow: 0 22px 44px -22px var(--kh-shadow), 0 0 0 1px color-mix(in srgb, var(--kh-brand) 14%, transparent), 0 10px 34px -14px color-mix(in srgb, var(--kh-brand) 35%, transparent);
 }
 
 .text-gradient {
-  background: linear-gradient(92deg, #ffa04d 0%, #ff7a1a 45%, #7c6cff 100%);
+  background: linear-gradient(92deg, var(--kh-brand-bright) 0%, var(--kh-brand) 50%, var(--kh-accent2) 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
@@ -193,3 +258,22 @@ body {
 .no-scrollbar { scrollbar-width: none; }
 
 .mask-fade-x { mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent); }
+
+/* ------------------------- smooth light ⇄ dark switching ------------------------- */
+/* <ThemeSync/> adds .theme-transition for ~0.5s whenever the device flips light/dark, so every
+   surface fades instead of snapping. It is not added for visitors who prefer reduced motion. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease,
+    fill 0.45s ease, stroke 0.45s ease, box-shadow 0.45s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

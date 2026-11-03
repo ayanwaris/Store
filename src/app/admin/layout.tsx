@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import {
   LayoutDashboard, Users, Store, Package, ShoppingBag, Ticket as TicketIcon,
-  Banknote, Undo2, FolderTree, ShieldAlert, ScrollText, Settings, ArrowLeft,
+  Banknote, Undo2, FolderTree, ShieldAlert, ScrollText, Settings, ArrowLeft, LayoutTemplate, Palette,
 } from "lucide-react";
 
 const NAV = [
@@ -10,6 +10,8 @@ const NAV = [
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/sellers", label: "Sellers", icon: Store },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/homepage", label: "Homepage", icon: LayoutTemplate },
+  { href: "/admin/site", label: "Site & theme", icon: Palette },
   { href: "/admin/catalog", label: "Categories & banners", icon: FolderTree },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/coupons", label: "Coupons", icon: TicketIcon },
@@ -25,7 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="container-x py-8">
       <div className="mb-6 flex items-center gap-4">
-        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-brand-bright to-vio font-display text-lg font-bold text-white">
+        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gold font-display text-lg font-bold text-on-brand">
           KH
         </span>
         <div>

@@ -8,6 +8,7 @@ import {
 import { ok, fail, parseJson, assertSameOrigin } from "@/lib/api";
 import { requireApiAdmin, requireApiUser } from "@/lib/guards";
 import { logAudit, notify, setSetting } from "@/lib/ops";
+import { isSafeUrl } from "@/lib/site-config";
 import { BusinessError, processRefund } from "@/lib/commerce";
 
 type Ctx = { params: Promise<{ resource: string; id: string }> };
@@ -29,9 +30,12 @@ const ProductPatch = z.object({
   genre: z.string().max(40).optional().nullable(), coverHue: z.number().int().min(0).max(359).optional(),
   categoryId: z.string().uuid().optional().nullable(), tags: z.array(z.string()).max(10).optional(),
 });
+const SafeUrl = z.string().max(500).refine(isSafeUrl, "Use a site path like /category/games or a full https:// URL");
 const CategoryPatch = z.object({
   name: z.string().min(2).max(40).optional(),
   blurb: z.string().max(160).optional(), icon: z.string().max(30).optional(),
+  imageUrl: SafeUrl.nullable().optional(), href: SafeUrl.nullable().optional(),
+  active: z.boolean().optional(),
 });
 const CouponPatch = z.object({
   active: z.boolean().optional(), value: z.number().positive().max(500).optional(),
@@ -107,7 +111,11 @@ export async function PATCH(req: Request, ctx: Ctx) {
     case "categories": {
       const { data, resp } = await parseJson(req, CategoryPatch);
       if (!data) return resp!;
-      await db.update(categories).set(data).where(eq(categories.id, id));
+      await db.update(categories).set({
+        ...data,
+        ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl || null } : {}),
+        ...(data.href !== undefined ? { href: data.href || null } : {}),
+      }).where(eq(categories.id, id));
       await logAudit({ actorId: adminId, action: "category.update", entity: "category", entityId: id });
       return ok({ updated: true });
     }
