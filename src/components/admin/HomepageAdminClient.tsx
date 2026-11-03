@@ -11,6 +11,7 @@ import {
   type HomeSection, type SectionSettings, type SectionType,
 } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 type Labels = Record<string, string>;
 type Row = { id: string; label: string; sub?: string };
@@ -124,22 +125,22 @@ function SectionEditor({ s, categories, labels, onSection, onSettings }: {
       {s.type === "product_grid" && (
         <div className="grid gap-3 md:grid-cols-3">
           <Field label="Source">
-            <select className="select" value={st.gridSource ?? "popular"} onChange={(e) => onSettings({ gridSource: e.target.value as never })}>
+            <GlassSelect className="select" value={st.gridSource ?? "popular"} onChange={(e) => onSettings({ gridSource: e.target.value as never })}>
               {GRID_SOURCES.map((g) => <option key={g} value={g}>{{ featured: "Featured products", popular: "Bestsellers", newest: "Newest / recently added", discount: "Biggest discounts", giftcard: "Gift cards", category: "A specific category" }[g]}</option>)}
-            </select>
+            </GlassSelect>
           </Field>
           {st.gridSource === "category" && (
             <Field label="Category">
-              <select className="select" value={st.categorySlug ?? ""} onChange={(e) => onSettings({ categorySlug: e.target.value })}>
+              <GlassSelect className="select" value={st.categorySlug ?? ""} onChange={(e) => onSettings({ categorySlug: e.target.value })}>
                 <option value="">Choose…</option>
                 {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
-              </select>
+              </GlassSelect>
             </Field>
           )}
           <Field label="Layout">
-            <select className="select" value={st.layout ?? "grid"} onChange={(e) => onSettings({ layout: e.target.value as never })}>
+            <GlassSelect className="select" value={st.layout ?? "grid"} onChange={(e) => onSettings({ layout: e.target.value as never })}>
               <option value="grid">Grid</option><option value="spotlight">Spotlight (text panel + 4 products)</option>
-            </select>
+            </GlassSelect>
           </Field>
         </div>
       )}
@@ -150,9 +151,9 @@ function SectionEditor({ s, categories, labels, onSection, onSettings }: {
             <input className="input" type="number" min={1} max={24} value={st.limit ?? 6} onChange={(e) => onSettings({ limit: num(e.target.value, 6) })} />
           </Field>
           <Field label="Selection">
-            <select className="select" value={st.mode ?? "auto"} onChange={(e) => onSettings({ mode: e.target.value as never })}>
+            <GlassSelect className="select" value={st.mode ?? "auto"} onChange={(e) => onSettings({ mode: e.target.value as never })}>
               <option value="auto">Automatic (by rule)</option><option value="manual">Hand-picked</option>
-            </select>
+            </GlassSelect>
           </Field>
         </div>
       )}
@@ -169,14 +170,14 @@ function SectionEditor({ s, categories, labels, onSection, onSettings }: {
           <div className="grid gap-3 md:grid-cols-3">
             <Field label="Sellers to show"><input className="input" type="number" min={1} max={12} value={st.limit ?? 4} onChange={(e) => onSettings({ limit: num(e.target.value, 4, 1, 12) })} /></Field>
             <Field label="Sort by">
-              <select className="select" value={st.sellerSort ?? "reviews"} onChange={(e) => onSettings({ sellerSort: e.target.value as never })}>
+              <GlassSelect className="select" value={st.sellerSort ?? "reviews"} onChange={(e) => onSettings({ sellerSort: e.target.value as never })}>
                 <option value="reviews">Number of reviews</option><option value="rating">Positive rating</option><option value="sales">Total sales</option>
-              </select>
+              </GlassSelect>
             </Field>
             <Field label="Selection" hint="Only approved sellers are ever shown.">
-              <select className="select" value={st.mode ?? "auto"} onChange={(e) => onSettings({ mode: e.target.value as never })}>
+              <GlassSelect className="select" value={st.mode ?? "auto"} onChange={(e) => onSettings({ mode: e.target.value as never })}>
                 <option value="auto">Automatic (by sort)</option><option value="manual">Hand-picked</option>
-              </select>
+              </GlassSelect>
             </Field>
           </div>
           {st.mode === "manual" && <Picker kind="seller" max={12} ids={st.sellerIds ?? []} labels={labels} onChange={(ids) => onSettings({ sellerIds: ids })} />}
@@ -185,9 +186,9 @@ function SectionEditor({ s, categories, labels, onSection, onSettings }: {
 
       {s.type === "adsense" && (
         <Field label="Ad placement" hint="Each placement has its own AdSense unit ID. If the placement isn't fully set up, this section stays hidden.">
-          <select className="select max-w-xs" value={st.adSlot ?? "home_top"} onChange={(e) => onSettings({ adSlot: e.target.value as never })}>
+          <GlassSelect className="select max-w-xs" value={st.adSlot ?? "home_top"} onChange={(e) => onSettings({ adSlot: e.target.value as never })}>
             <option value="home_top">Home — top</option><option value="home_middle">Home — middle</option><option value="home_bottom">Home — bottom</option>
-          </select>
+          </GlassSelect>
           <Link href="/admin/site#advertising" className="mt-2 inline-block text-xs font-semibold text-brand underline">Configure AdSense →</Link>
         </Field>
       )}
@@ -198,9 +199,9 @@ function SectionEditor({ s, categories, labels, onSection, onSettings }: {
           <Field label="Link URL (optional)"><input className="input" value={st.linkUrl ?? ""} onChange={(e) => onSettings({ linkUrl: e.target.value })} /></Field>
           <Field label="Image description (alt text)"><input className="input" value={st.alt ?? ""} onChange={(e) => onSettings({ alt: e.target.value })} /></Field>
           <Field label="Height">
-            <select className="select" value={st.height ?? "medium"} onChange={(e) => onSettings({ height: e.target.value as never })}>
+            <GlassSelect className="select" value={st.height ?? "medium"} onChange={(e) => onSettings({ height: e.target.value as never })}>
               <option value="slim">Slim (90px)</option><option value="medium">Medium (160px)</option><option value="large">Large (250px)</option>
-            </select>
+            </GlassSelect>
           </Field>
           {st.imageUrl && /^(https:\/\/|\/)/.test(st.imageUrl) && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -213,9 +214,9 @@ function SectionEditor({ s, categories, labels, onSection, onSettings }: {
         <div className="space-y-3">
           {(st.steps ?? []).map((step, i) => (
             <div key={i} className="grid gap-2 rounded-xl border border-line p-3 md:grid-cols-[9rem_1fr_2fr_auto]">
-              <select className="select" value={step.icon} onChange={(e) => onSettings({ steps: (st.steps ?? []).map((x, j) => j === i ? { ...x, icon: e.target.value as never } : x) })}>
+              <GlassSelect className="select" value={step.icon} onChange={(e) => onSettings({ steps: (st.steps ?? []).map((x, j) => j === i ? { ...x, icon: e.target.value as never } : x) })}>
                 {STEP_ICONS.map((ic) => <option key={ic}>{ic}</option>)}
-              </select>
+              </GlassSelect>
               <input className="input" placeholder="Title" value={step.title} maxLength={60} onChange={(e) => onSettings({ steps: (st.steps ?? []).map((x, j) => j === i ? { ...x, title: e.target.value } : x) })} />
               <input className="input" placeholder="Text" value={step.text} maxLength={200} onChange={(e) => onSettings({ steps: (st.steps ?? []).map((x, j) => j === i ? { ...x, text: e.target.value } : x) })} />
               <button type="button" className="btn btn-danger btn-sm" aria-label="Remove step" onClick={() => onSettings({ steps: (st.steps ?? []).filter((_, j) => j !== i) })}><Trash2 size={13} /></button>
@@ -286,7 +287,7 @@ export default function HomepageAdminClient({ initial, categories, labels }: {
   return (
     <div className="mt-5">
       <div className="card sticky top-36 z-20 flex flex-wrap items-center gap-2 p-3">
-        <select className="select max-w-56" value={adding} onChange={(e) => {
+        <GlassSelect className="select max-w-56" value={adding} onChange={(e) => {
           const t = e.target.value as SectionType;
           if (!t) return;
           const created = newSection(t, sections.length);
@@ -294,7 +295,7 @@ export default function HomepageAdminClient({ initial, categories, labels }: {
         }} aria-label="Add section">
           <option value="">+ Add section…</option>
           {addable.map((t) => <option key={t} value={t}>{SECTION_META[t].label}</option>)}
-        </select>
+        </GlassSelect>
         <button className="btn btn-outline btn-sm" type="button" onClick={() => { if (confirm("Replace the layout with the default homepage?")) set(DEFAULT_SECTIONS); }}>
           <RotateCcw size={13} /> Reset to default
         </button>

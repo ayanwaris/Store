@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowDownWideNarrow, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { hrefWith, listOf, toggled, type FilterKey, type SP } from "./url";
+import { hrefWith, listOf, toggled, type FilterKey, type SP } from "./url";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 export type FacetOption = { value: string; label: string; count: number };
 export type FacetGroup = { key: FilterKey; title: string; options: FacetOption[]; limit: number };
@@ -157,9 +158,9 @@ export default function BrowseShell({ current, groups, total, children }: {
           <label className="flex items-center gap-2 text-sm font-semibold">
             <ArrowDownWideNarrow size={16} className="text-faint" />
             <span className="sr-only">Sort by</span>
-            <select className="select w-auto text-sm" value={current.sort ?? "popular"} onChange={(e) => go({ sort: e.target.value === "popular" ? undefined : e.target.value })}>
+            <GlassSelect aria-label="Sort by" className="select w-auto text-sm" value={current.sort ?? "popular"} onChange={(e) => go({ sort: e.target.value === "popular" ? undefined : e.target.value })}>
               {SORTS.map(([v, l]) => <option key={v} value={v}>{v === "popular" ? "Popularity: Most popular" : l}</option>)}
-            </select>
+            </GlassSelect>
           </label>
         </div>
 

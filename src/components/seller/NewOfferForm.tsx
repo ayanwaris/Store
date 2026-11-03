@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, PackageSearch, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn, fmtEUR } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 type Product = { id: string; slug: string; title: string; platform: string; kind: string; rrp: number };
 
@@ -95,9 +96,9 @@ export default function NewOfferForm() {
         </div>
         <div>
           <label className="label">Region</label>
-          <select className="select" value={region} onChange={(e) => setRegion(e.target.value)}>
+          <GlassSelect className="select" value={region} onChange={(e) => setRegion(e.target.value)}>
             {["GLOBAL", "EU", "US", "LATAM", "ASIA"].map((r) => <option key={r}>{r}</option>)}
-          </select>
+          </GlassSelect>
         </div>
       </div>
 

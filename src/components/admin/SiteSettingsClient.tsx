@@ -13,6 +13,7 @@ import {
   type ColorSide, type EditableKey, type PresetId, type ThemeSettings, type ThemeTokens,
 } from "@/lib/theme";
 import { cn } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 async function put(key: string, body: unknown) {
   const res = await fetch(`/api/admin/site/${key}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -161,10 +162,10 @@ function ThemeTab({ initial }: { initial: ThemeSettings }) {
             <p className="mt-1 text-xs text-faint">Change any colour of the active theme. A dot marks edited colours; the arrow button restores the preset value.</p>
           </div>
           <label className="flex items-center gap-2 text-sm">Light / dark behaviour
-            <select className="select max-w-48" value={modeValue} onChange={(e) => setMode(e.target.value)}>
+            <GlassSelect className="select max-w-48" value={modeValue} onChange={(e) => setMode(e.target.value)}>
               {t.preset !== "custom" && <option value="preset">Preset default</option>}
               <option value="auto">Follow visitor&apos;s device</option><option value="light">Always light</option><option value="dark">Always dark</option>
-            </select>
+            </GlassSelect>
           </label>
         </div>
 
@@ -221,9 +222,9 @@ function ThemeTab({ initial }: { initial: ThemeSettings }) {
           <p className="mt-1 text-xs text-faint">0 = solid surfaces. Higher = more translucent, blurred cards and navbar over soft coloured shapes. Try 0 vs 100 in the preview.</p>
           <input type="range" min={0} max={100} value={t.glass} aria-label="Glass intensity" onChange={(e) => setT({ ...t, glass: Number(e.target.value) })} className="mt-3 w-full accent-[var(--kh-brand)]" />
           <h3 className="mt-5 font-display font-bold">Corner style</h3>
-          <select className="select mt-2 max-w-56" value={t.radius} onChange={(e) => setT({ ...t, radius: e.target.value as never })}>
+          <GlassSelect className="select mt-2 max-w-56" value={t.radius} onChange={(e) => setT({ ...t, radius: e.target.value as never })}>
             <option value="sharp">Sharp</option><option value="soft">Soft (default)</option><option value="round">Round</option>
-          </select>
+          </GlassSelect>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <GlassPreview tokens={r.light} glass={t.glass} />
@@ -263,9 +264,9 @@ function BannerTab({ initial }: { initial: PromoConfig }) {
         </div>
         <div className="grid gap-3 md:grid-cols-3">
           <div><label className="label">Style</label>
-            <select className="select" value={p.style} onChange={(e) => setP({ ...p, style: e.target.value as never })}>
+            <GlassSelect className="select" value={p.style} onChange={(e) => setP({ ...p, style: e.target.value as never })}>
               <option value="gold">Theme accent (gold)</option><option value="dark">Inverted (text colour as background)</option><option value="custom">Custom colours</option>
-            </select></div>
+            </GlassSelect></div>
           {p.style === "custom" && <>
             <label className="flex items-center gap-2 text-sm">Background <input type="color" className="h-9 w-12 rounded border border-line bg-transparent" value={p.bgColor} onChange={(e) => setP({ ...p, bgColor: e.target.value })} /></label>
             <label className="flex items-center gap-2 text-sm">Text <input type="color" className="h-9 w-12 rounded border border-line bg-transparent" value={p.textColor} onChange={(e) => setP({ ...p, textColor: e.target.value })} /></label>
@@ -273,9 +274,9 @@ function BannerTab({ initial }: { initial: PromoConfig }) {
         </div>
         <div className="grid gap-3 md:grid-cols-3">
           <div><label className="label">Visible to</label>
-            <select className="select" value={p.audience} onChange={(e) => setP({ ...p, audience: e.target.value as never })}>
+            <GlassSelect className="select" value={p.audience} onChange={(e) => setP({ ...p, audience: e.target.value as never })}>
               <option value="all">Everyone</option><option value="guests">Signed-out visitors</option><option value="members">Signed-in users</option>
-            </select></div>
+            </GlassSelect></div>
           <div><label className="label">Starts (optional)</label><input type="datetime-local" className="input" value={toLocal(p.startsAt)} onChange={(e) => setP({ ...p, startsAt: fromLocal(e.target.value) })} /></div>
           <div><label className="label">Ends (optional)</label><input type="datetime-local" className="input" value={toLocal(p.endsAt)} onChange={(e) => setP({ ...p, endsAt: fromLocal(e.target.value) })} /></div>
         </div>

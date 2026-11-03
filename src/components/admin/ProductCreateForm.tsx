@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { PLATFORMS, REGIONS, KINDS, KIND_LABEL } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 export default function ProductCreateForm({ categories, trigger }: {
   categories: Array<{ id: string; name: string }>;
@@ -73,27 +74,27 @@ export default function ProductCreateForm({ categories, trigger }: {
               </div>
               <div>
                 <label className="label">Category</label>
-                <select className="select" value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)}>
+                <GlassSelect className="select" value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)}>
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                </GlassSelect>
               </div>
               <div>
                 <label className="label">Type</label>
-                <select className="select" value={form.kind} onChange={(e) => set("kind", e.target.value)}>
+                <GlassSelect className="select" value={form.kind} onChange={(e) => set("kind", e.target.value)}>
                   {KINDS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}
-                </select>
+                </GlassSelect>
               </div>
               <div>
                 <label className="label">Platform</label>
-                <select className="select" value={form.platform} onChange={(e) => set("platform", e.target.value)}>
+                <GlassSelect className="select" value={form.platform} onChange={(e) => set("platform", e.target.value)}>
                   {PLATFORMS.map((p) => <option key={p}>{p}</option>)}
-                </select>
+                </GlassSelect>
               </div>
               <div>
                 <label className="label">Region</label>
-                <select className="select" value={form.region} onChange={(e) => set("region", e.target.value)}>
+                <GlassSelect className="select" value={form.region} onChange={(e) => set("region", e.target.value)}>
                   {REGIONS.map((r) => <option key={r}>{r}</option>)}
-                </select>
+                </GlassSelect>
               </div>
               <div>
                 <label className="label">RRP (EUR)</label>

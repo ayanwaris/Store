@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { PLATFORMS, REGIONS, KINDS, KIND_LABEL } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 type Props = {
   current: Record<string, string | undefined>;
@@ -27,7 +28,7 @@ export default function FilterControls({ current, hideKinds }: Props) {
   return (
     <div className="card flex flex-wrap items-center gap-2.5 p-3">
       {!hideKinds && (
-        <select
+        <GlassSelect
           className="select w-auto text-sm"
           value={current.kind ?? ""}
           onChange={(e) => apply({ kind: e.target.value || undefined })}
@@ -35,9 +36,9 @@ export default function FilterControls({ current, hideKinds }: Props) {
         >
           <option value="">All types</option>
           {KINDS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}
-        </select>
+        </GlassSelect>
       )}
-      <select
+      <GlassSelect
         className="select w-auto text-sm"
         value={current.platform ?? ""}
         onChange={(e) => apply({ platform: e.target.value || undefined })}
@@ -45,8 +46,8 @@ export default function FilterControls({ current, hideKinds }: Props) {
       >
         <option value="">All platforms</option>
         {PLATFORMS.map((p) => <option key={p} value={p}>{p}</option>)}
-      </select>
-      <select
+      </GlassSelect>
+      <GlassSelect
         className="select w-auto text-sm"
         value={current.region ?? ""}
         onChange={(e) => apply({ region: e.target.value || undefined })}
@@ -54,7 +55,7 @@ export default function FilterControls({ current, hideKinds }: Props) {
       >
         <option value="">All regions</option>
         {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-      </select>
+      </GlassSelect>
 
       <div className="flex items-center gap-1.5">
         <input className="input w-20 text-sm" placeholder="Min €" inputMode="decimal" value={min}
@@ -68,7 +69,7 @@ export default function FilterControls({ current, hideKinds }: Props) {
       </div>
 
       <div className="ml-auto">
-        <select
+        <GlassSelect
           className="select w-auto text-sm"
           value={current.sort ?? "popular"}
           onChange={(e) => apply({ sort: e.target.value })}
@@ -80,7 +81,7 @@ export default function FilterControls({ current, hideKinds }: Props) {
           <option value="rating">Best rated</option>
           <option value="discount">Biggest discount</option>
           <option value="newest">Newest</option>
-        </select>
+        </GlassSelect>
       </div>
     </div>
   );

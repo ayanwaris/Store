@@ -6,6 +6,7 @@ import { ChevronDown, Loader2, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn, statusTone, timeAgo } from "@/lib/utils";
 import RatingStars from "@/components/RatingStars";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 type Review = { id: string; rating: number; comment: string | null; createdAt: string; authorName: string; target: string; kind: string };
 type Ticket = { id: string; subject: string; status: string; priority: string; updatedAt: string; userName: string; userEmail: string; messages: number };
@@ -110,7 +111,7 @@ export default function ModerationClient({ reviews, tickets }: { reviews: Review
                   <span className="block truncate text-sm font-semibold">{t.subject}</span>
                   <span className="block text-[11px] text-faint">{t.userName} · {t.userEmail} · {t.messages} msg · {timeAgo(t.updatedAt)}</span>
                 </span>
-                <select
+                <GlassSelect
                   className="select w-auto py-1 text-[11px]"
                   value={t.status}
                   onClick={(e) => e.stopPropagation()}
@@ -120,7 +121,7 @@ export default function ModerationClient({ reviews, tickets }: { reviews: Review
                   <option value="open">open</option>
                   <option value="pending">pending</option>
                   <option value="closed">closed</option>
-                </select>
+                </GlassSelect>
                 <ChevronDown size={14} className={cn("text-faint transition-transform", openId === t.id && "rotate-180")} />
               </button>
               {openId === t.id && (

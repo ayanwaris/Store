@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, PlusCircle, X } from "lucide-react";
 import { toast } from "sonner";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 export default function CouponCreateForm() {
   const [open, setOpen] = useState(false);
@@ -53,10 +54,10 @@ export default function CouponCreateForm() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="label">Kind</label>
-                  <select className="select" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
+                  <GlassSelect className="select" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
                     <option value="percent">Percent %</option>
                     <option value="fixed">Fixed €</option>
-                  </select>
+                  </GlassSelect>
                 </div>
                 <div>
                   <label className="label">Value</label>

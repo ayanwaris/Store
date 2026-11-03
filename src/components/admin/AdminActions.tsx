@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Loader2, ShieldOff, ShieldCheck, Star, Eye, EyeOff, Trash2, BadgePercent } from "lucide-react";
 import { toast } from "sonner";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 async function call(method: string, url: string, body?: unknown) {
   const res = await fetch(url, {
@@ -50,7 +51,7 @@ export function BanUserButton({ id, banned }: { id: string; banned: boolean }) {
 export function RoleSelect({ id, role }: { id: string; role: string }) {
   const { run } = useAdminAction();
   return (
-    <select
+    <GlassSelect
       className="select w-auto py-1 text-xs"
       value={role}
       onChange={(e) => run("PATCH", `/api/admin/users/${id}`, { role: e.target.value }, "Role updated")}
@@ -58,7 +59,7 @@ export function RoleSelect({ id, role }: { id: string; role: string }) {
     >
       <option value="buyer">buyer</option>
       <option value="admin">admin</option>
-    </select>
+    </GlassSelect>
   );
 }
 

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { KeyRound, Loader2, Pencil, Power, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn, fmtEUR } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 type Offer = {
   id: string; price: number; region: string; active: boolean;
@@ -155,9 +156,9 @@ export default function SellerOffersClient({ offers }: { offers: Offer[] }) {
               </div>
               <div>
                 <label className="label">Region</label>
-                <select className="select" value={region} onChange={(e) => setRegion(e.target.value)}>
+                <GlassSelect className="select" value={region} onChange={(e) => setRegion(e.target.value)}>
                   {["GLOBAL", "EU", "US", "LATAM", "ASIA"].map((r) => <option key={r}>{r}</option>)}
-                </select>
+                </GlassSelect>
               </div>
             </div>
             <button className="btn btn-primary mt-5 w-full" onClick={saveEdit} disabled={busy}>

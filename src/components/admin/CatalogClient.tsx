@@ -7,6 +7,7 @@ import SortableList from "@/components/admin/SortableList";
 import { CATEGORY_ICON_NAMES, getCategoryIcon } from "@/lib/category-icons";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 type Cat = { id: string; name: string; slug: string; icon: string; blurb: string; imageUrl: string; href: string; active: boolean };
 type Bnr = { id: string; title: string; subtitle: string; ctaText: string; ctaHref: string; hue: number; active: boolean; position: number };
@@ -142,9 +143,9 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
             </div>
             <div>
               <label className="label">Icon</label>
-              <select className="select" value={catForm.icon} onChange={(e) => setCatForm({ ...catForm, icon: e.target.value })}>
+              <GlassSelect className="select" value={catForm.icon} onChange={(e) => setCatForm({ ...catForm, icon: e.target.value })}>
                 {CATEGORY_ICON_NAMES.map((i) => <option key={i}>{i}</option>)}
-              </select>
+              </GlassSelect>
             </div>
             <div>
               <label className="label">Custom image URL <span className="font-normal text-faint">(optional — replaces the icon)</span></label>
