@@ -1,14 +1,18 @@
 import "server-only";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { and, eq, gt } from "drizzle-orm";
 import { db } from "@/db";
 import { sessions, users, carts, cartItems, sellerProfiles } from "@/db/schema";
 import { redirect } from "next/navigation";
+import { buildLoginUrl } from "@/lib/redirect";
 
 export const SESSION_COOKIE = "kh_session";
 export const CART_COOKIE = "kh_cart";
 const SESSION_DAYS = 30;
+
+/** Request header set by src/proxy.ts with the current path + query. Must match that file. */
+const CURRENT_URL_HEADER = "x-current-url";
 
 export const hashPassword = (pw: string) => bcrypt.hashSync(pw, 10);
 export const verifyPassword = (pw: string, hash: string) => bcrypt.compareSync(pw, hash);
@@ -51,22 +55,32 @@ export async function getSessionUser(): Promise<SafeUser | null> {
   };
 }
 
+/**
+ * Login URL that sends the visitor back to the page they were trying to open.
+ * The destination is validated (sanitizeNext) inside buildLoginUrl; if the proxy header is
+ * missing or unsafe this is simply "/login", i.e. the existing default behaviour.
+ */
+export async function loginUrlForCurrentRequest(): Promise<string> {
+  const h = await headers();
+  return buildLoginUrl(h.get(CURRENT_URL_HEADER));
+}
+
 export async function requireUser() {
   const u = await getSessionUser();
-  if (!u) redirect("/login");
+  if (!u) redirect(await loginUrlForCurrentRequest());
   return u;
 }
 
 export async function requireAdmin() {
   const u = await getSessionUser();
-  if (!u) redirect("/login");
+  if (!u) redirect(await loginUrlForCurrentRequest());
   if (u.role !== "admin") redirect("/");
   return u;
 }
 
 export async function requireSeller() {
   const u = await getSessionUser();
-  if (!u) redirect("/login");
+  if (!u) redirect(await loginUrlForCurrentRequest());
   if (u.sellerStatus !== "approved") redirect("/sell");
   return { ...u, sellerId: u.sellerId! };
 }

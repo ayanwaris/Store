@@ -10,6 +10,7 @@ import {
 import SearchBar from "@/components/SearchBar";
 import PromoBanner from "@/components/site/PromoBanner";
 import ThemeToggle from "@/components/site/ThemeToggle";
+import AuthLink from "@/components/site/AuthLink";
 import { categoryHref, renderCategoryIcon } from "@/lib/category-icons";
 import type { PromoBanner as PromoConfig } from "@/lib/site-config";
 import { cn, timeAgo } from "@/lib/utils";
@@ -259,8 +260,8 @@ export default function Header({ user, categories, cartCount, unread, promo, the
               </div>
             ) : (
               <>
-                <Link href="/login" className="btn btn-ghost btn-sm">Log in</Link>
-                <Link href="/register" className="btn btn-primary btn-sm max-[359px]:hidden!">Sign up</Link>
+                <AuthLink to="login" className="btn btn-ghost btn-sm">Log in</AuthLink>
+                <AuthLink to="register" className="btn btn-primary btn-sm max-[359px]:hidden!">Sign up</AuthLink>
               </>
             )}
           </div>
@@ -367,8 +368,8 @@ export default function Header({ user, categories, cartCount, unread, promo, the
             </div>
             {!user && (
               <div className="mt-6 flex gap-2">
-                <Link href="/login" className="btn btn-outline flex-1">Log in</Link>
-                <Link href="/register" className="btn btn-primary flex-1">Sign up</Link>
+                <AuthLink to="login" className="btn btn-outline flex-1">Log in</AuthLink>
+                <AuthLink to="register" className="btn btn-primary flex-1">Sign up</AuthLink>
               </div>
             )}
           </div>

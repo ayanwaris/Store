@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { KeyRound, Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
+import { buildLoginUrl, buildRegisterUrl, resolveNext } from "@/lib/redirect";
 
 async function post(url: string, body: unknown) {
   const res = await fetch(url, {
@@ -30,9 +31,10 @@ export function LoginForm({ next }: { next?: string }) {
         e.preventDefault();
         setBusy(true);
         try {
-          await post("/api/auth/login", { email, password });
+          // `next` is sent for server-side validation; the server answers with a safe `redirectTo`.
+          const json = await post("/api/auth/login", { email, password, next });
           toast.success("Welcome back!");
-          router.push(next ?? "/");
+          router.push(resolveNext(json?.data?.redirectTo ?? next));
           router.refresh();
         } catch (err) {
           toast.error(err instanceof Error ? err.message : "Login failed");
@@ -56,7 +58,7 @@ export function LoginForm({ next }: { next?: string }) {
         </button>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm">
           <Link href="/forgot-password" className="link py-1">Forgot password?</Link>
-          <Link href="/register" className="py-1 font-semibold text-brand-bright hover:underline">Create account</Link>
+          <Link href={buildRegisterUrl(next)} className="py-1 font-semibold text-brand-bright hover:underline">Create account</Link>
         </div>
       </div>
     </form>
@@ -79,9 +81,9 @@ export function RegisterForm({ next }: { next?: string }) {
         e.preventDefault();
         setBusy(true);
         try {
-          await post("/api/auth/register", { name, email, password });
+          const json = await post("/api/auth/register", { name, email, password, next });
           toast.success("Account created — welcome to KeyHaven!");
-          router.push(next ?? "/");
+          router.push(resolveNext(json?.data?.redirectTo ?? next));
           router.refresh();
         } catch (err) {
           toast.error(err instanceof Error ? err.message : "Registration failed");
@@ -116,6 +118,10 @@ export function RegisterForm({ next }: { next?: string }) {
         <p className="text-center text-xs text-faint">
           By continuing you agree to our <Link href="/legal/terms" className="underline">Terms</Link> and{" "}
           <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.
+        </p>
+        <p className="text-center text-sm text-mute">
+          Already have an account?{" "}
+          <Link href={buildLoginUrl(next)} className="font-semibold text-brand-bright hover:underline">Log in</Link>
         </p>
       </div>
     </form>

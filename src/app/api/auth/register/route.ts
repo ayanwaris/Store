@@ -5,11 +5,14 @@ import { users } from "@/db/schema";
 import { ok, fail, parseJson, rateLimit, getIp, assertSameOrigin } from "@/lib/api";
 import { createSession, hashPassword, mergeCartIntoUser, SESSION_COOKIE } from "@/lib/auth";
 import { notify } from "@/lib/ops";
+import { resolveNext } from "@/lib/redirect";
 
 const Schema = z.object({
   name: z.string().min(2, "Name too short").max(40),
   email: z.string().email().max(120),
   password: z.string().min(8, "Password must be at least 8 characters").max(100),
+  // Optional post-registration destination. Never trusted: validated below, ignored if unsafe.
+  next: z.string().max(2000).optional(),
 });
 
 export async function POST(req: Request) {
@@ -42,7 +45,10 @@ export async function POST(req: Request) {
   const { id, expiresAt } = await createSession(user.id);
   await mergeCartIntoUser(user.id);
 
-  const res = ok({ user: { id: user.id, name: user.name, email: user.email } }, { status: 201 });
+  // Server-validated destination (falls back to the existing default "/" when missing or unsafe).
+  const redirectTo = resolveNext(data.next);
+
+  const res = ok({ user: { id: user.id, name: user.name, email: user.email }, redirectTo }, { status: 201 });
   res.cookies.set(SESSION_COOKIE, id, {
     httpOnly: true, sameSite: "lax", path: "/", expires: expiresAt,
     secure: process.env.NODE_ENV === "production",

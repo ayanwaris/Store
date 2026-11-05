@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Star, Send } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { buildLoginUrl } from "@/lib/redirect";
 
 export default function ReviewForm({ productId, orderItemId }: { productId: string; orderItemId?: string }) {
   const [rating, setRating] = useState(5);
@@ -22,6 +23,13 @@ export default function ReviewForm({ productId, orderItemId }: { productId: stri
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, orderItemId, rating, comment: comment || undefined }),
       });
+      if (res.status === 401) {
+        // Session expired while the form was open: log in, then come back to the Reviews tab.
+        // Nothing is submitted automatically — the visitor presses "Publish review" again.
+        toast("Your session expired — log in to continue");
+        router.push(buildLoginUrl(`${window.location.pathname}${window.location.search}#reviews`));
+        return;
+      }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Failed to submit review");
       toast.success("Thanks! Your review is live.");

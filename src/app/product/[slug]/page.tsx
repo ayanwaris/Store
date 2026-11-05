@@ -7,6 +7,7 @@ import {
   categories, offers, orderItems, orders, products, recentlyViewed, reviews, sellerProfiles, users, wishlists,
 } from "@/db/schema";
 import { getSessionUser } from "@/lib/auth";
+import { buildLoginUrl } from "@/lib/redirect";
 import { getProductCards } from "@/lib/commerce";
 import { fmtEUR, fmtNum, KIND_LABEL } from "@/lib/utils";
 import CoverArt from "@/components/CoverArt";
@@ -276,7 +277,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             ? "Buy and receive this product to unlock a verified review."
                             : "Log in and purchase to leave a verified review."}
                         </p>
-                        {!user && <Link href="/login" className="btn btn-outline btn-sm mt-3">Log in</Link>}
+                        {!user && (
+                          // After login, return to this product with the Reviews tab open.
+                          <Link href={buildLoginUrl(`/product/${encodeURIComponent(product.slug)}#reviews`)} className="btn btn-outline btn-sm mt-3">Log in</Link>
+                        )}
                       </div>
                     )}
                   </div>

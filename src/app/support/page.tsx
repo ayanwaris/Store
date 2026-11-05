@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getSessionUser } from "@/lib/auth";
+import { buildLoginUrl } from "@/lib/redirect";
 import { LifeBuoy, Package, KeyRound, CreditCard, Store, ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = { title: "Help center" };
@@ -40,7 +41,7 @@ export default async function SupportPage() {
       <div className="text-center">
         <h1 className="font-display text-3xl font-bold md:text-4xl">How can we help?</h1>
         <p className="mt-2 text-mute">Instant answers below, or open a ticket and a human replies fast.</p>
-        <Link href={user ? "/account/support" : "/login"} className="btn btn-primary mt-5">
+        <Link href={user ? "/account/support" : buildLoginUrl("/account/support")} className="btn btn-primary mt-5">
           Open a support ticket <ChevronRight size={15} />
         </Link>
       </div>

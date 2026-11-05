@@ -1,10 +1,10 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { inventoryKeys, orderItems, orders, payments, products, refunds, sellerProfiles } from "@/db/schema";
-import { getSessionUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { fmtEUR, formatDate, ORDER_STATUS_LABEL, statusTone } from "@/lib/utils";
 import CoverArt from "@/components/CoverArt";
 import { CancelOrderButton, KeyReveal, RefundRequestButton } from "@/components/OrderWidgets";
@@ -18,8 +18,7 @@ export default async function OrderPage({
   params: Promise<{ number: string }>;
   searchParams: Promise<{ paid?: string }>;
 }) {
-  const user = await getSessionUser();
-  if (!user) redirect("/login");
+  const user = await requireUser(); // logged-out visitors go to login and come back to this order
   const { number } = await params;
   const { paid } = await searchParams;
 

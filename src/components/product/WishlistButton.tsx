@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { buildLoginUrl, locationToNext } from "@/lib/redirect";
 
 export default function WishlistButton({ productId, active, loggedIn }: {
   productId: string; active: boolean; loggedIn: boolean;
@@ -16,7 +17,8 @@ export default function WishlistButton({ productId, active, loggedIn }: {
   const toggle = async () => {
     if (!loggedIn) {
       toast("Log in to save products to your wishlist");
-      return router.push("/login");
+      // Return to this page (query + hash included) after login.
+      return router.push(buildLoginUrl(locationToNext(window.location)));
     }
     setBusy(true);
     try {
