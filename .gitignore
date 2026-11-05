@@ -30,7 +30,7 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 *.log
-logs/
+/logs/
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # ==========================================
