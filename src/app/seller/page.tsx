@@ -59,20 +59,20 @@ export default async function SellerOverview() {
       </div>
 
       {/* revenue chart */}
-      <div className="card p-5">
+      <div className="card p-4 sm:p-5">
         <h2 className="font-display font-bold">Net sales — last 14 days</h2>
         {byDay.length === 0 ? (
           <p className="mt-3 text-sm text-mute">No sales yet in this window. List an offer to get moving.</p>
         ) : (
           <div className="mt-4 flex h-36 items-end gap-1.5">
             {byDay.map((d, i) => (
-              <div key={i} className="group relative flex-1">
+              <div key={i} tabIndex={0} role="img" aria-label={`${d.day}: ${fmtEUR(d.revenue)}`} className="group relative flex-1 outline-none">
                 <div
                   className="w-full rounded-t-md bg-gradient-to-t from-brand-deep/60 to-brand transition-all group-hover:from-brand group-hover:to-brand-bright"
                   style={{ height: `${Math.max(4, (d.revenue / maxRev) * 120)}px` }}
                 />
-                <p className="mt-1.5 truncate text-center text-[9px] text-faint">{d.day}</p>
-                <div className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-panel px-2 py-0.5 text-[11px] opacity-0 shadow-lg transition group-hover:opacity-100">
+                <p className={`mt-1.5 truncate text-center text-[9px] text-faint ${i % 2 ? "max-sm:hidden" : ""}`}>{d.day}</p>
+                <div className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-panel px-2 py-0.5 text-[11px] opacity-0 shadow-lg transition group-hover:opacity-100 group-focus:opacity-100">
                   {fmtEUR(d.revenue)}
                 </div>
               </div>
@@ -83,7 +83,7 @@ export default async function SellerOverview() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* low stock */}
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="flex items-center gap-2 font-display font-bold">
             <AlertTriangle size={16} className="text-amber-300" /> Low-stock offers
           </h2>
@@ -105,7 +105,7 @@ export default async function SellerOverview() {
         </div>
 
         {/* recent sales */}
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="font-display font-bold">Latest sales</h2>
           {recentSales.length === 0 ? (
             <p className="mt-3 text-sm text-mute">Sales will appear here in real time.</p>

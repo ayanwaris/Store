@@ -22,14 +22,14 @@ export default function WishlistClient({ cards }: { cards: PCard[] }) {
     }
   };
   return (
-    <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
       {cards.map((p) => (
         <div key={p.id} className="relative">
           <ProductCard p={p} />
           <button
             onClick={() => remove(p.id)}
             aria-label="Remove from wishlist"
-            className="absolute right-2 top-2 z-10 grid h-7 w-7 place-items-center rounded-lg bg-black/70 text-mute backdrop-blur transition hover:text-rose-300"
+            className="absolute right-2 top-10 z-10 grid h-9 w-9 place-items-center rounded-lg bg-black/70 text-mute backdrop-blur transition hover:text-rose-300 sm:h-7 sm:w-7"
           >
             <X size={14} />
           </button>

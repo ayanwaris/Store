@@ -43,14 +43,14 @@ export default async function SearchPage({
   ];
 
   return (
-    <div className="container-x py-8">
+    <div className="container-x py-6 md:py-8">
       <h1 className="font-display text-2xl font-bold md:text-3xl">
         {q ? <>Results for <span className="text-gradient">“{q}”</span></> : "Browse everything"}
       </h1>
 
       <BrowseShell current={sp} groups={groups} total={total}>
         {cards.length === 0 ? (
-          <div className="card flex flex-col items-center p-14 text-center">
+          <div className="card flex flex-col items-center p-8 text-center sm:p-14">
             <SearchX size={40} className="text-faint" />
             <p className="mt-4 font-display text-lg font-bold">No matches</p>
             <p className="mt-1 max-w-sm text-sm text-mute">
@@ -59,7 +59,7 @@ export default async function SearchPage({
             <Link href={q ? `/search?q=${encodeURIComponent(q)}` : "/search"} className="btn btn-outline mt-5">Clear filters</Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
             {cards.map((p) => <ProductCard key={p.id} p={p} />)}
           </div>
         )}

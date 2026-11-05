@@ -35,9 +35,9 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
           <h2 className="font-display text-xl font-bold">Products</h2>
           <p className="mt-0.5 text-sm text-faint">{list.length} in catalog</p>
         </div>
-        <div className="flex gap-2">
-          <form method="get" className="flex gap-2">
-            <input name="q" className="input w-52" placeholder="Search title…" defaultValue={q ?? ""} />
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+          <form method="get" className="flex w-full gap-2 sm:w-auto">
+            <input name="q" className="input min-w-0 flex-1 sm:w-52 sm:flex-none" enterKeyHint="search" placeholder="Search title…" defaultValue={q ?? ""} />
             <button className="btn btn-outline">Search</button>
           </form>
           <ProductCreateForm categories={cats.map((c) => ({ id: c.id, name: c.name }))} trigger={
@@ -46,31 +46,31 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
         </div>
       </div>
 
-      <div className="card mt-5 overflow-x-auto">
-        <table className="table-x min-w-[860px]">
+      <div className="card mt-5 overflow-x-auto p-3 sm:p-0">
+        <table className="table-x table-stack min-w-[860px]">
           <thead>
             <tr><th>Product</th><th>Category</th><th>Kind</th><th>Platform</th><th>RRP</th><th>Rating</th><th>Offers / stock</th><th>Status</th><th className="text-right">Actions</th></tr>
           </thead>
           <tbody>
             {list.map((r) => (
               <tr key={String(r.id)} className={!r.active ? "opacity-50" : ""}>
-                <td>
+                <td data-full>
                   <Link href={`/product/${r.slug}`} className="font-semibold hover:text-brand-bright">{String(r.title)}</Link>
                   <p className="text-xs text-faint">{String(r.slug)}</p>
                 </td>
-                <td className="text-mute">{String(r.categoryName ?? "—")}</td>
-                <td><span className="chip">{String(r.kind)}</span></td>
-                <td className="text-mute">{String(r.platform)}</td>
-                <td>{fmtEUR(Number(r.rrp))}</td>
-                <td><RatingStars value={Number(r.ratingAvg)} count={Number(r.ratingCount)} /></td>
-                <td className="text-mute">{String(r.offerCount)} / {String(r.stock)}</td>
-                <td>
+                <td data-label="Category" className="text-mute">{String(r.categoryName ?? "—")}</td>
+                <td data-label="Kind"><span className="chip">{String(r.kind)}</span></td>
+                <td data-label="Platform" className="text-mute">{String(r.platform)}</td>
+                <td data-label="RRP">{fmtEUR(Number(r.rrp))}</td>
+                <td data-label="Rating"><RatingStars value={Number(r.ratingAvg)} count={Number(r.ratingCount)} /></td>
+                <td data-label="Offers / stock" className="text-mute">{String(r.offerCount)} / {String(r.stock)}</td>
+                <td data-label="Status">
                   {r.active
                     ? <span className="chip border border-mint/25 bg-mint/5 text-[10px] text-mint">live</span>
                     : <span className="chip border border-line text-[10px] text-faint">hidden</span>}
                   {Boolean(r.featured) && <span className="chip ml-1 border border-amber-400/30 bg-amber-400/10 text-[10px] text-amber-300">featured</span>}
                 </td>
-                <td className="text-right">
+                <td data-label="Actions" className="text-right">
                   <ProductToggles id={String(r.id)} active={Boolean(r.active)} featured={Boolean(r.featured)} />
                 </td>
               </tr>

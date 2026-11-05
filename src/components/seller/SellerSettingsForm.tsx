@@ -15,7 +15,7 @@ export function SellerSettingsForm({ storeName, about, commissionRate, slug }: {
 
   return (
     <form
-      className="card space-y-4 p-6"
+      className="card space-y-4 p-4 sm:p-6"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -36,7 +36,7 @@ export function SellerSettingsForm({ storeName, about, commissionRate, slug }: {
     >
       <div>
         <label className="label">Store name</label>
-        <input className="input" value={name} minLength={3} maxLength={40} onChange={(e) => setName(e.target.value)} />
+        <input className="input" autoComplete="organization" value={name} minLength={3} maxLength={40} onChange={(e) => setName(e.target.value)} />
       </div>
       <div>
         <label className="label">Store URL</label>
@@ -51,7 +51,7 @@ export function SellerSettingsForm({ storeName, about, commissionRate, slug }: {
         <input className="input" value={`${commissionRate}% on each sale`} disabled />
         <p className="mt-1 text-[11px] text-faint">Contact support or your account manager for rate reviews.</p>
       </div>
-      <button className="btn btn-primary" disabled={busy}>
+      <button className="btn btn-primary w-full sm:w-auto" disabled={busy}>
         {busy && <Loader2 size={14} className="animate-spin" />} Save store
       </button>
     </form>

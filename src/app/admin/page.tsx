@@ -76,7 +76,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="font-display font-bold">Revenue — last 14 days</h2>
           <div className="mt-4 flex h-40 items-end gap-2">
             {byDay.length === 0 && <p className="text-sm text-mute">No transactions yet.</p>}
@@ -84,17 +84,17 @@ export default async function AdminDashboard() {
               <div key={i} className="group relative flex flex-1 items-end gap-0.5">
                 <div className="flex-1 rounded-t bg-vio/70" style={{ height: `${Math.max(3, (d.sales / maxRev) * 128)}px` }} title={`Sales ${fmtEUR(d.sales)}`} />
                 <div className="flex-1 rounded-t bg-brand" style={{ height: `${Math.max(3, (d.commission / maxRev) * 128)}px` }} title={`Commission ${fmtEUR(d.commission)}`} />
-                <p className="absolute -bottom-5 left-0 right-0 truncate text-center text-[9px] text-faint">{d.day}</p>
+                <p className={`absolute -bottom-5 left-0 right-0 truncate text-center text-[9px] text-faint ${i % 2 ? "max-sm:hidden" : ""}`}>{d.day}</p>
               </div>
             ))}
           </div>
-          <div className="mt-8 flex gap-4 text-[11px] text-faint">
+          <div className="mt-8 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-faint">
             <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-vio" /> Seller sales</span>
             <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-brand" /> Platform commission</span>
           </div>
         </div>
 
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="font-display font-bold">Top products by units</h2>
           <ul className="mt-3 space-y-3">
             {topProducts.length === 0 && <p className="text-sm text-mute">No sales yet.</p>}
@@ -112,24 +112,26 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="card overflow-hidden">
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+        <div className="flex items-center justify-between border-b border-line px-4 py-3 sm:px-5 sm:py-4">
           <h2 className="font-display font-bold">Latest orders</h2>
           <Link href="/admin/orders" className="btn btn-ghost btn-sm">All orders <ArrowRight size={13} /></Link>
         </div>
-        <table className="table-x">
+        <div className="p-3 sm:p-0">
+<table className="table-x table-stack">
           <thead><tr><th>Order</th><th>Buyer</th><th>Placed</th><th>Status</th><th className="text-right">Total</th></tr></thead>
           <tbody>
             {recentOrders.map((o) => (
               <tr key={String(o.number)}>
-                <td className="font-semibold">{String(o.number)}</td>
-                <td className="text-mute">{String(o.buyerName)}</td>
-                <td className="text-mute">{formatDate(String(o.createdAt))}</td>
-                <td><span className={`chip border text-[10px] ${statusTone(String(o.status))}`}>{ORDER_STATUS_LABEL[String(o.status)] ?? String(o.status)}</span></td>
-                <td className="text-right font-display font-bold">{fmtEUR(Number(o.total))}</td>
+                <td data-label="Order" className="font-semibold">{String(o.number)}</td>
+                <td data-label="Buyer" className="text-mute">{String(o.buyerName)}</td>
+                <td data-label="Placed" className="text-mute">{formatDate(String(o.createdAt))}</td>
+                <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(String(o.status))}`}>{ORDER_STATUS_LABEL[String(o.status)] ?? String(o.status)}</span></td>
+                <td data-label="Total" className="text-right font-display font-bold">{fmtEUR(Number(o.total))}</td>
               </tr>
             ))}
           </tbody>
         </table>
+</div>
       </div>
     </div>
   );

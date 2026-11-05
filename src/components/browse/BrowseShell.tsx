@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowDownWideNarrow, ChevronDown, SlidersHorizontal, X } from "lucide-react";
@@ -36,7 +36,7 @@ function Section({ title, badge, children }: { title: string; badge?: number; ch
   const [open, setOpen] = useState(true);
   return (
     <div className="border-b border-line-soft py-3.5 last:border-b-0">
-      <button type="button" className="flex w-full items-center justify-between text-left" aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button type="button" className="flex w-full items-center justify-between py-1 text-left" aria-expanded={open} onClick={() => setOpen(!open)}>
         <span className="flex items-center gap-2 text-sm font-bold">
           {title}
           {!!badge && <span className="grid h-4 min-w-4 place-items-center rounded-full bg-gold px-1 text-[10px] font-bold text-on-brand">{badge}</span>}
@@ -57,8 +57,8 @@ function FacetList({ g, selected, onToggle }: { g: FacetGroup; selected: string[
     <ul className="space-y-0.5">
       {shown.map((o) => (
         <li key={o.value}>
-          <label className="flex cursor-pointer items-center gap-2.5 rounded-md px-1 py-1.5 text-sm transition hover:bg-raised/60">
-            <input type="checkbox" className="h-4 w-4 shrink-0 cursor-pointer rounded accent-[var(--kh-brand)]" checked={selected.includes(o.value)} onChange={() => onToggle(o.value)} />
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-md px-1 py-2.5 text-sm transition hover:bg-raised/60 lg:py-1.5">
+            <input type="checkbox" className="h-5 w-5 shrink-0 cursor-pointer rounded accent-[var(--kh-brand)] lg:h-4 lg:w-4" checked={selected.includes(o.value)} onChange={() => onToggle(o.value)} />
             <span className="min-w-0 flex-1 truncate">{o.label}</span>
             <span className="text-xs tabular-nums text-faint">{o.count}</span>
           </label>
@@ -86,6 +86,16 @@ export default function BrowseShell({ current, groups, total, children }: {
   const router = useRouter();
   const pathname = usePathname();
   const [drawer, setDrawer] = useState(false);
+
+  // phones: while the filter drawer is open the page behind it must not scroll; Escape closes it
+  useEffect(() => {
+    if (!drawer) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setDrawer(false); };
+    document.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
+  }, [drawer]);
 
   const go = (patch: SP) => router.push(hrefWith(pathname, current, patch), { scroll: false });
 
@@ -120,18 +130,28 @@ export default function BrowseShell({ current, groups, total, children }: {
         </Section>
       ))}
       {activeCount > 0 && <Link href={clearAll} className="btn btn-outline btn-sm mt-3 w-full" onClick={() => setDrawer(false)}>Clear all filters</Link>}
+      {/* phones: filters apply instantly, so give a clear way back to the results */}
+      <div className="sticky bottom-0 -mx-4 -mb-4 mt-3 border-t border-line bg-panel/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
+        <button type="button" className="btn btn-primary w-full" onClick={() => setDrawer(false)}>Show {total} result{total === 1 ? "" : "s"}</button>
+      </div>
     </>
   );
 
+  const renderSort = (className: string, short: boolean) => (
+    <GlassSelect aria-label="Sort by" className={className} value={current.sort ?? "popular"} onChange={(e) => go({ sort: e.target.value === "popular" ? undefined : e.target.value })}>
+      {SORTS.map(([v, l]) => <option key={v} value={v}>{v === "popular" ? (short ? "Most popular" : "Popularity: Most popular") : l}</option>)}
+    </GlassSelect>
+  );
+
   return (
-    <div className="mt-6 grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
+    <div className="mt-4 grid gap-6 sm:mt-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
       {drawer && <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setDrawer(false)} />}
       <aside
         aria-label="Filters"
         className={cn(
-          "card p-4",
+          "card p-4 no-scrollbar",
           drawer
-            ? "fixed inset-y-0 left-0 z-50 w-[88%] max-w-sm overflow-y-auto rounded-none lg:static lg:z-auto lg:w-auto lg:max-w-none lg:rounded-[var(--kh-radius)]"
+            ? "fixed inset-y-0 left-0 z-50 w-[88%] max-w-sm overflow-y-auto overscroll-contain pt-[max(1rem,env(safe-area-inset-top))] rounded-none lg:static lg:z-auto lg:w-auto lg:max-w-none lg:rounded-[var(--kh-radius)]"
             : "hidden lg:block",
           "lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto",
         )}
@@ -140,10 +160,15 @@ export default function BrowseShell({ current, groups, total, children }: {
       </aside>
 
       <section className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className="btn btn-outline btn-sm lg:hidden" onClick={() => setDrawer(true)}>
-            <SlidersHorizontal size={14} /> Filters{activeCount > 0 && ` (${activeCount})`}
+        {/* phones: Filters and Sort side by side, one tap each */}
+        <div className="grid grid-cols-2 gap-2 lg:hidden">
+          <button type="button" className="btn btn-outline w-full" onClick={() => setDrawer(true)}>
+            <SlidersHorizontal size={15} /> Filters{activeCount > 0 && ` (${activeCount})`}
           </button>
+          {renderSort("select text-sm", true)}
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2 empty:hidden lg:mt-0">
           {chips.map((c) => (
             <button key={c.label + JSON.stringify(c.patch)} type="button" onClick={() => go(c.patch)}
               className="chip border-brand/40 text-brand hover:bg-brand/10" aria-label={`Remove filter ${c.label}`}>
@@ -155,12 +180,10 @@ export default function BrowseShell({ current, groups, total, children }: {
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-mute">Results found: <span className="font-bold text-ink">{total}</span></p>
-          <label className="flex items-center gap-2 text-sm font-semibold">
+          <label className="hidden items-center gap-2 text-sm font-semibold lg:flex">
             <ArrowDownWideNarrow size={16} className="text-faint" />
             <span className="sr-only">Sort by</span>
-            <GlassSelect aria-label="Sort by" className="select w-auto text-sm" value={current.sort ?? "popular"} onChange={(e) => go({ sort: e.target.value === "popular" ? undefined : e.target.value })}>
-              {SORTS.map(([v, l]) => <option key={v} value={v}>{v === "popular" ? "Popularity: Most popular" : l}</option>)}
-            </GlassSelect>
+            {renderSort("select w-auto text-sm", false)}
           </label>
         </div>
 

@@ -16,34 +16,36 @@ export default async function OrdersPage() {
 
   return (
     <div className="card overflow-hidden">
-      <div className="border-b border-line px-5 py-4">
+      <div className="border-b border-line px-4 py-3.5 sm:px-5 sm:py-4">
         <h2 className="font-display font-bold">Order history</h2>
         <p className="mt-0.5 text-xs text-faint">Every purchase, its status, and its digital delivery.</p>
       </div>
       {rows.length === 0 ? (
-        <div className="flex flex-col items-center p-12 text-center">
+        <div className="flex flex-col items-center p-8 text-center sm:p-12">
           <Package size={36} className="text-faint" />
           <p className="mt-3 font-semibold">No orders yet</p>
           <p className="mt-1 text-sm text-mute">Grab a deal and it will land here.</p>
           <Link href="/search?sort=popular" className="btn btn-primary btn-sm mt-4">Browse bestsellers</Link>
         </div>
       ) : (
-        <table className="table-x">
+        <div className="p-3 sm:p-0">
+        <table className="table-x table-stack">
           <thead><tr><th>Order</th><th>Placed</th><th>Items</th><th>Status</th><th className="text-right">Total</th></tr></thead>
           <tbody>
             {rows.map(({ order, items }) => (
               <tr key={order.id}>
-                <td>
+                <td data-label="Order">
                   <Link href={`/order/${order.number}`} className="font-semibold hover:text-brand-bright">{order.number}</Link>
                 </td>
-                <td className="text-mute">{formatDate(order.createdAt)}</td>
-                <td className="text-mute">{items}</td>
-                <td><span className={`chip border text-[10px] ${statusTone(order.status)}`}>{ORDER_STATUS_LABEL[order.status] ?? order.status}</span></td>
-                <td className="text-right font-display font-bold">{fmtEUR(order.total)}</td>
+                <td data-label="Placed" className="text-mute">{formatDate(order.createdAt)}</td>
+                <td data-label="Items" className="text-mute">{items}</td>
+                <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(order.status)}`}>{ORDER_STATUS_LABEL[order.status] ?? order.status}</span></td>
+                <td data-label="Total" className="text-right font-display font-bold">{fmtEUR(order.total)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

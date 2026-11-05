@@ -54,20 +54,20 @@ export default async function AccountOverview() {
       </div>
 
       {/* referral */}
-      <div className="card flex flex-wrap items-center gap-4 p-5">
-        <span className="grid h-11 w-11 place-items-center rounded-xl bg-vio/15 text-vio"><Share2 size={18} /></span>
-        <div className="flex-1">
+      <div className="card flex flex-wrap items-center gap-3 p-4 sm:gap-4 sm:p-5">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-vio/15 text-vio"><Share2 size={18} /></span>
+        <div className="min-w-[12rem] flex-1">
           <p className="font-display font-bold">Invite friends, earn credit</p>
           <p className="text-sm text-mute">Share your referral code — rewards apply to their first purchase.</p>
         </div>
-        <code className="chip border border-vio/30 bg-vio/10 px-3 py-1.5 font-mono text-sm text-vio">
+        <code className="chip max-w-full break-all border border-vio/30 bg-vio/10 px-3 py-1.5 font-mono text-sm text-vio">
           {String(stats.referralCode ?? "—")}
         </code>
       </div>
 
       {/* recent orders */}
       <div className="card">
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+        <div className="flex items-center justify-between border-b border-line px-4 py-3 sm:px-5 sm:py-4">
           <h2 className="font-display font-bold">Recent orders</h2>
           <Link href="/account/orders" className="btn btn-ghost btn-sm">All orders <ArrowRight size={13} /></Link>
         </div>
@@ -76,16 +76,20 @@ export default async function AccountOverview() {
         ) : (
           <div className="divide-y divide-line-soft">
             {recentOrders.map((o) => (
-              <Link key={String(o.number)} href={`/order/${o.number}`} className="flex items-center gap-4 px-5 py-3.5 transition hover:bg-white/2">
+              <Link key={String(o.number)} href={`/order/${o.number}`} className="flex items-center gap-3 px-4 py-3.5 transition hover:bg-white/2 sm:gap-4 sm:px-5">
                 <Package size={16} className="shrink-0 text-faint" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold">{String(o.number)}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{String(o.number)}</p>
                   <p className="text-xs text-faint">{formatDate(String(o.createdAt))} · {String(o.items)} item(s)</p>
+                  {/* phones: the status chip sits under the date so the row doesn't get cramped */}
+                  <span className={`chip mt-1 border text-[10px] sm:hidden ${statusTone(String(o.status))}`}>
+                    {ORDER_STATUS_LABEL[String(o.status)] ?? String(o.status)}
+                  </span>
                 </div>
-                <span className={`chip border text-[10px] ${statusTone(String(o.status))}`}>
+                <span className={`chip hidden border text-[10px] sm:inline-flex ${statusTone(String(o.status))}`}>
                   {ORDER_STATUS_LABEL[String(o.status)] ?? String(o.status)}
                 </span>
-                <span className="font-display font-bold">{fmtEUR(Number(o.total))}</span>
+                <span className="shrink-0 font-display font-bold">{fmtEUR(Number(o.total))}</span>
               </Link>
             ))}
           </div>
@@ -94,7 +98,7 @@ export default async function AccountOverview() {
 
       {/* recently viewed */}
       {recentViewed.length > 0 && (
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="font-display font-bold">Recently viewed</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {recentViewed.map((p) => (

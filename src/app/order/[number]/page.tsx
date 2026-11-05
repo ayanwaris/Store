@@ -53,7 +53,7 @@ export default async function OrderPage({
   const isPaid = order.status === "completed";
 
   return (
-    <div className="container-x max-w-4xl py-10">
+    <div className="container-x max-w-4xl py-6 md:py-10">
       {/* hero status */}
       <div className="text-center">
         {isPaid ? (
@@ -61,7 +61,7 @@ export default async function OrderPage({
             <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-mint/15 text-mint animate-float">
               {paid ? <PartyPopper size={28} /> : <CheckCircle2 size={28} />}
             </span>
-            <h1 className="mt-4 font-display text-3xl font-bold">
+            <h1 className="mt-4 font-display text-2xl font-bold sm:text-3xl">
               {paid ? "Payment complete — enjoy!" : "Order complete"}
             </h1>
             <p className="mt-1.5 text-sm text-mute">
@@ -71,33 +71,33 @@ export default async function OrderPage({
         ) : order.status === "pending_payment" ? (
           <>
             <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-amber-400/15 text-amber-300"><Timer size={28} /></span>
-            <h1 className="mt-4 font-display text-3xl font-bold">Payment not finished</h1>
+            <h1 className="mt-4 font-display text-2xl font-bold sm:text-3xl">Payment not finished</h1>
             <p className="mt-1.5 text-sm text-mute">This order is awaiting payment. Its keys are reserved temporarily.</p>
           </>
         ) : (
           <>
             <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white/5 text-mute"><XCircle size={28} /></span>
-            <h1 className="mt-4 font-display text-3xl font-bold">{ORDER_STATUS_LABEL[order.status] ?? order.status}</h1>
+            <h1 className="mt-4 font-display text-2xl font-bold sm:text-3xl">{ORDER_STATUS_LABEL[order.status] ?? order.status}</h1>
             <p className="mt-1.5 text-sm text-mute">Order {order.number} · placed {formatDate(order.createdAt)}</p>
           </>
         )}
       </div>
 
-      <div className="card mt-8 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+      <div className="card mt-6 overflow-hidden sm:mt-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 border-b border-line px-4 py-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-faint">Order</p>
             <p className="font-display font-bold">{order.number}</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="text-xs font-bold uppercase tracking-wider text-faint">Placed</p>
             <p className="text-sm font-semibold">{formatDate(order.createdAt)}</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="text-xs font-bold uppercase tracking-wider text-faint">Status</p>
             <span className={`chip mt-0.5 border ${statusTone(order.status)}`}>{ORDER_STATUS_LABEL[order.status] ?? order.status}</span>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="text-xs font-bold uppercase tracking-wider text-faint">Total</p>
             <p className="font-display text-lg font-bold text-brand-bright">{fmtEUR(order.total)}</p>
           </div>
@@ -108,8 +108,8 @@ export default async function OrderPage({
             const itemKeys = keys.filter((k) => k.orderItemId === it.id);
             const pendingRefund = refundRows.find((r) => r.orderItemId === it.id);
             return (
-              <div key={it.id} className="p-5">
-                <div className="flex flex-wrap items-center gap-4">
+              <div key={it.id} className="p-4 sm:p-5">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                   <Link href={`/product/${it.slug}`}>
                     <CoverArt title={it.title} hue={it.coverHue} platform={it.platform} kind={it.kind} className="h-20 w-16 rounded-lg" />
                   </Link>
@@ -129,7 +129,7 @@ export default async function OrderPage({
 
                 {/* keys */}
                 {itemKeys.length > 0 && (
-                  <div className="mt-4 space-y-2 rounded-xl border border-line bg-raised/30 p-3.5">
+                  <div className="mt-4 space-y-2 rounded-xl border border-line bg-raised/30 p-3 sm:p-3.5">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-faint">
                       Digital key{itemKeys.length > 1 ? "s" : ""}
                     </p>
@@ -156,7 +156,7 @@ export default async function OrderPage({
         </div>
 
         {/* totals */}
-        <div className="border-t border-line bg-raised/20 px-5 py-4">
+        <div className="border-t border-line bg-raised/20 px-4 py-4 sm:px-5">
           <dl className="ml-auto max-w-xs space-y-1.5 text-sm">
             <div className="flex justify-between"><dt className="text-mute">Subtotal</dt><dd>{fmtEUR(order.subtotal)}</dd></div>
             {order.discount > 0 && (
@@ -183,7 +183,7 @@ export default async function OrderPage({
           Protected by buyer guarantee — if a key fails, request a refund above and we step in.
         </p>
         {order.status === "pending_payment" && <CancelOrderButton orderId={order.id} />}
-        {isPaid && <Link href="/account/library" className="btn btn-primary">Go to my library</Link>}
+        {isPaid && <Link href="/account/library" className="btn btn-primary w-full sm:w-auto">Go to my library</Link>}
       </div>
     </div>
   );

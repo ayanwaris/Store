@@ -5,13 +5,27 @@ import { useRouter } from "next/navigation";
 import { Copy, Eye, EyeOff, Undo2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
+/** Clipboard API needs https; on plain http (e.g. testing on a phone over Wi-Fi) fall back to a hidden textarea. */
+async function copyText(text: string) {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;font-size:16px";
+  document.body.appendChild(ta);
+  ta.select();
+  const ok = document.execCommand("copy");
+  document.body.removeChild(ta);
+  if (!ok) throw new Error("copy failed");
+}
+
 export function KeyReveal({ code, revoked }: { code: string; revoked?: boolean }) {
   const [shown, setShown] = useState(false);
   const masked = code.split("-").map((s, i) => (i === 0 ? s : "•••••")).join("-");
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <code className={`rounded-lg border border-line bg-panel px-3 py-1.5 font-mono text-sm tracking-wider ${revoked ? "text-faint line-through" : "text-mint"}`}>
+      <code className={`min-w-0 max-w-full break-all rounded-lg border border-line bg-panel px-3 py-1.5 font-mono text-[13px] tracking-normal sm:text-sm sm:tracking-wider ${revoked ? "text-faint line-through" : "text-mint"}`}>
         {revoked ? code : shown ? code : masked}
       </code>
       {!revoked && (
@@ -22,8 +36,12 @@ export function KeyReveal({ code, revoked }: { code: string; revoked?: boolean }
           <button
             className="btn btn-ghost btn-sm"
             onClick={async () => {
-              await navigator.clipboard.writeText(code);
-              toast.success("Key copied to clipboard");
+              try {
+                await copyText(code);
+                toast.success("Key copied to clipboard");
+              } catch {
+                toast.error("Couldn't copy — press and hold the key to copy it.");
+              }
             }}
             aria-label="Copy key"
           >
@@ -80,7 +98,7 @@ export function RefundRequestButton({ orderId, orderItemId }: { orderId: string;
         value={reason}
         onChange={(e) => setReason(e.target.value)}
       />
-      <div className="mt-2.5 flex gap-2">
+      <div className="mt-2.5 flex flex-wrap gap-2">
         <button className="btn btn-primary btn-sm" onClick={submit} disabled={busy}>
           {busy ? "Submitting…" : "Submit request"}
         </button>

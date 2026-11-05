@@ -41,9 +41,9 @@ export default function CouponCreateForm() {
     <>
       <button className="btn btn-primary" onClick={() => setOpen(true)}><PlusCircle size={15} /> New coupon</button>
       {open && (
-        <div className="fixed inset-0 z-50 grid place-items-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="card animate-pop relative w-full max-w-sm p-6">
+          <div className="card animate-pop relative max-h-[92dvh] w-full max-w-sm overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] max-sm:rounded-b-none sm:p-6">
             <button className="btn btn-ghost btn-sm absolute right-3 top-3" onClick={() => setOpen(false)}><X size={16} /></button>
             <h3 className="font-display text-lg font-bold">Create coupon</h3>
             <div className="mt-4 space-y-3">
@@ -64,8 +64,8 @@ export default function CouponCreateForm() {
                   <input className="input" type="number" min={1} value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="col-span-2 sm:col-span-1">
                   <label className="label">Min €</label>
                   <input className="input" type="number" min={0} value={form.minSubtotal} onChange={(e) => setForm({ ...form, minSubtotal: e.target.value })} />
                 </div>

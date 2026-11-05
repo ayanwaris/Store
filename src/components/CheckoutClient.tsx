@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   CreditCard, Wallet, IndianRupee, Sparkles, Lock, Tag,
-  CheckCircle2, AlertTriangle, RotateCcw, ArrowLeft, Loader2,
+  CheckCircle2, AlertTriangle, RotateCcw, ArrowLeft, Loader2, ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn, fmtEUR } from "@/lib/utils";
@@ -27,6 +27,7 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
 }) {
   const router = useRouter();
   const [method, setMethod] = useState("card");
+  const [summaryOpen, setSummaryOpen] = useState(false); // phones: order summary starts collapsed
   const [card, setCard] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
@@ -84,14 +85,57 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
 
   const fmtCard = (v: string) => v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
 
+  const itemCount = items.reduce((n, i) => n + i.quantity, 0);
+  const summaryBody = (
+    <>
+          <div className="mt-3 max-h-64 space-y-2.5 overflow-y-auto pr-1">
+            {items.map((i) => (
+              <div key={i.itemId} className="flex items-center justify-between gap-3 text-sm">
+                <div className="min-w-0">
+                  <p className="truncate font-medium">{i.title}{i.quantity > 1 ? ` ×${i.quantity}` : ""}</p>
+                  <p className="text-[11px] text-faint">{i.platform} · {i.sellerName}</p>
+                </div>
+                <span className="shrink-0 font-semibold">{fmtEUR(i.price * i.quantity)}</span>
+              </div>
+            ))}
+          </div>
+          <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+            <div className="flex justify-between"><dt className="text-mute">Subtotal</dt><dd>{fmtEUR(totals.subtotal)}</dd></div>
+            {couponCode && totals.discount > 0 && (
+              <div className="flex justify-between text-mint">
+                <dt className="flex items-center gap-1"><Tag size={12} /> {couponCode}</dt>
+                <dd>−{fmtEUR(totals.discount)}</dd>
+              </div>
+            )}
+            <div className="flex justify-between"><dt className="text-mute">Service fee</dt><dd>{fmtEUR(totals.fee)}</dd></div>
+            <div className="flex justify-between border-t border-line pt-3">
+              <dt className="font-bold">Total</dt>
+              <dd className="font-display text-xl font-bold text-brand-bright">{fmtEUR(totals.total)}</dd>
+            </div>
+          </dl>
+    </>
+  );
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+    <div className="grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
       {/* left: payment */}
       <div>
         <h1 className="font-display text-2xl font-bold md:text-3xl">Secure checkout</h1>
         <p className="mt-1 text-sm text-mute">
           Welcome back, {userName}. This is a sandbox payment environment — no real money moves.
         </p>
+
+        {/* phones: collapsed order summary (the full card stays in the right column on desktop) */}
+        <div className="card mt-4 p-4 lg:hidden">
+          <button type="button" className="flex w-full items-center justify-between gap-3 text-left" aria-expanded={summaryOpen} onClick={() => setSummaryOpen((v) => !v)}>
+            <span className="text-sm font-bold">Order summary <span className="font-normal text-faint">· {itemCount} item{itemCount === 1 ? "" : "s"}</span></span>
+            <span className="flex items-center gap-2">
+              <span className="font-display font-bold text-brand-bright">{fmtEUR(totals.total)}</span>
+              <ChevronDown size={16} className={cn("text-faint transition", summaryOpen && "rotate-180")} />
+            </span>
+          </button>
+          {summaryOpen && summaryBody}
+        </div>
 
         {/* payment methods */}
         <div className="mt-6 space-y-2.5">
@@ -120,14 +164,16 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
 
         {/* card fields (sandbox) */}
         {method === "card" && phase === "form" && (
-          <div className="card mt-4 p-5">
-            <div className="mb-3 flex items-center justify-between">
+          <div className="card mt-4 p-4 sm:p-5">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-bold">Card details</p>
-              <span className="chip text-[10px]">Test: 4242 4242 4242 4242 · declines: 4000 0000 0000 0002</span>
+              <span className="chip max-w-full whitespace-normal text-left text-[10px]">Test: 4242 4242 4242 4242 · declines: 4000 0000 0000 0002</span>
             </div>
-            <div className="grid gap-3 sm:grid-cols-[1fr_110px_110px]">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_110px_110px]">
               <input
-                className="input font-mono tracking-wider"
+                className="input col-span-2 font-mono tracking-wider sm:col-span-1"
+                inputMode="numeric"
+                autoComplete="cc-number"
                 placeholder="4242 4242 4242 4242"
                 value={card}
                 onChange={(e) => setCard(fmtCard(e.target.value))}
@@ -135,6 +181,8 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
               />
               <input
                 className="input font-mono"
+                inputMode="numeric"
+                autoComplete="cc-exp"
                 placeholder="12/28"
                 value={expiry}
                 onChange={(e) => {
@@ -145,6 +193,8 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
               />
               <input
                 className="input font-mono"
+                inputMode="numeric"
+                autoComplete="cc-csc"
                 placeholder="CVC"
                 value={cvc}
                 onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
@@ -163,7 +213,7 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
               <AlertTriangle size={15} /> Payment failed
             </p>
             <p className="mt-1 text-sm text-rose-200/80">{error}</p>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <button className="btn btn-outline btn-sm" onClick={() => setPhase("form")}>
                 <RotateCcw size={13} /> Try again
               </button>
@@ -181,6 +231,10 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
             <Lock size={16} /> Pay {fmtEUR(totals.total)}
           </button>
         )}
+        <p className="mt-3 flex items-start gap-2 text-xs text-faint lg:hidden">
+          <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-mint" />
+          Keys are reserved while you pay. Delivery is instant after payment.
+        </p>
 
         <Link href="/cart" className="btn btn-ghost btn-sm mt-4">
           <ArrowLeft size={14} /> Back to cart
@@ -189,35 +243,11 @@ export default function CheckoutClient({ userName, items, totals, couponCode }: 
 
       {/* right: summary */}
       <div className="h-fit lg:sticky lg:top-36">
-        <div className="card p-5">
+        <div className="card hidden p-5 lg:block">
           <h2 className="font-display font-bold">Your order</h2>
-          <div className="mt-3 max-h-64 space-y-2.5 overflow-y-auto pr-1">
-            {items.map((i) => (
-              <div key={i.itemId} className="flex items-center justify-between gap-3 text-sm">
-                <div className="min-w-0">
-                  <p className="truncate font-medium">{i.title}{i.quantity > 1 ? ` ×${i.quantity}` : ""}</p>
-                  <p className="text-[11px] text-faint">{i.platform} · {i.sellerName}</p>
-                </div>
-                <span className="shrink-0 font-semibold">{fmtEUR(i.price * i.quantity)}</span>
-              </div>
-            ))}
-          </div>
-          <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
-            <div className="flex justify-between"><dt className="text-mute">Subtotal</dt><dd>{fmtEUR(totals.subtotal)}</dd></div>
-            {couponCode && totals.discount > 0 && (
-              <div className="flex justify-between text-mint">
-                <dt className="flex items-center gap-1"><Tag size={12} /> {couponCode}</dt>
-                <dd>−{fmtEUR(totals.discount)}</dd>
-              </div>
-            )}
-            <div className="flex justify-between"><dt className="text-mute">Service fee</dt><dd>{fmtEUR(totals.fee)}</dd></div>
-            <div className="flex justify-between border-t border-line pt-3">
-              <dt className="font-bold">Total</dt>
-              <dd className="font-display text-xl font-bold text-brand-bright">{fmtEUR(totals.total)}</dd>
-            </div>
-          </dl>
+          {summaryBody}
         </div>
-        <div className="card mt-3 flex items-start gap-2.5 p-4 text-xs text-mute">
+        <div className="card mt-3 hidden items-start gap-2.5 p-4 text-xs text-mute lg:flex">
           <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-mint" />
           Keys are reserved for you while you pay. Delivery is instant: they appear in your library
           right after the payment succeeds.

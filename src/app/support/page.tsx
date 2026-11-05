@@ -36,7 +36,7 @@ const FAQS = [
 export default async function SupportPage() {
   const user = await getSessionUser();
   return (
-    <div className="container-x max-w-4xl py-12">
+    <div className="container-x max-w-4xl py-8 md:py-12">
       <div className="text-center">
         <h1 className="font-display text-3xl font-bold md:text-4xl">How can we help?</h1>
         <p className="mt-2 text-mute">Instant answers below, or open a ticket and a human replies fast.</p>
@@ -44,9 +44,9 @@ export default async function SupportPage() {
           Open a support ticket <ChevronRight size={15} />
         </Link>
       </div>
-      <div className="mt-10 space-y-3">
+      <div className="mt-8 space-y-3 sm:mt-10">
         {FAQS.map((f) => (
-          <details key={f.q} className="card group p-5 open:border-brand/30">
+          <details key={f.q} className="card group p-4 open:border-brand/30 sm:p-5">
             <summary className="flex cursor-pointer items-center gap-3 text-sm font-bold marker:hidden">
               <f.icon size={17} className="shrink-0 text-brand" />
               {f.q}

@@ -58,7 +58,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
       return (
         <section className="relative overflow-hidden border-b border-line" aria-label={section.title}>
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(760px_340px_at_50%_-10%,var(--kh-glow-1),transparent)]" />
-          <div className="container-x relative py-10 md:py-14">
+          <div className="container-x relative py-8 md:py-14">
             <div className="mx-auto max-w-3xl text-center">
               {st.eyebrow && (
                 <p className="animate-fade-up chip glass mx-auto mb-4 border-brand/30 text-brand">
@@ -83,7 +83,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
                   const Icon = getCategoryIcon(c.icon);
                   return (
                     <Link key={c.slug} href={categoryHref(c)}
-                      className="glass inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-1.5 text-xs font-semibold text-mute transition hover:border-brand/50 hover:text-brand">
+                      className="glass inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3.5 py-2 text-xs font-semibold text-mute transition hover:border-brand/50 hover:text-brand sm:py-1.5">
                       <Icon size={13} /> {c.name}
                     </Link>
                   );
@@ -127,7 +127,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
         return (
           <section className={cn("container-x", mt)} aria-label={section.title}>
             <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-              <div className="card relative flex flex-col justify-center overflow-hidden p-7 md:p-9">
+              <div className="card relative flex flex-col justify-center overflow-hidden p-5 sm:p-7 md:p-9">
                 <div className="pointer-events-none absolute -right-10 -top-12 h-48 w-48 rounded-full bg-brand/20 blur-3xl" />
                 <p className="chip w-fit border-brand/40 bg-brand/10 text-brand">Spotlight</p>
                 <h2 className="mt-3 font-display text-2xl font-bold md:text-3xl">{section.title}</h2>
@@ -136,7 +136,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
                   <Link href={st.ctaHref} className="btn btn-vio mt-5 w-fit">{st.ctaText || "Explore"} <ArrowRight size={15} /></Link>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {data.cards.slice(0, 4).map((p) => <ProductCard key={p.id} p={p} />)}
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
 
     case "sponsored": {
       if (!st.imageUrl) return null;
-      const h = st.height === "slim" ? "h-[90px]" : st.height === "large" ? "h-[250px]" : "h-[160px]";
+      const h = st.height === "slim" ? "h-[70px] sm:h-[90px]" : st.height === "large" ? "h-[150px] sm:h-[250px]" : "h-[110px] sm:h-[160px]";
       const external = !!st.linkUrl && /^https?:\/\//i.test(st.linkUrl);
       const img = (
         <div className={cn("relative w-full overflow-hidden rounded-2xl border border-line bg-raised", h)}>
@@ -229,7 +229,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
       const steps = st.steps ?? [];
       return (
         <section className={cn("container-x", mt)} aria-label={section.title}>
-          <div className="card relative overflow-hidden p-8 md:p-10">
+          <div className="card relative overflow-hidden p-5 sm:p-8 md:p-10">
             <div className="pointer-events-none absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-brand/15 blur-3xl" />
             <h2 className="text-center font-display text-2xl font-bold">{section.title}</h2>
             {section.description && <p className="mx-auto mt-2 max-w-xl text-center text-sm text-mute">{section.description}</p>}
@@ -238,7 +238,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
                 const Icon = STEP_ICON[s.icon] ?? Search;
                 return (
                   <div key={i} className="relative">
-                    <span className="font-display text-5xl font-bold text-ink/10">0{i + 1}</span>
+                    <span className="font-display text-4xl font-bold text-ink/10 sm:text-5xl">0{i + 1}</span>
                     <Icon size={22} className="mt-2 text-brand" />
                     <h3 className="mt-2 font-display font-bold">{s.title}</h3>
                     <p className="mt-1.5 text-sm leading-relaxed text-mute">{s.text}</p>
@@ -254,7 +254,7 @@ export default function HomeSection({ rendered, first, newsletter }: {
     case "newsletter":
       return (
         <section className={cn("container-x", mt)} aria-label="Newsletter">
-          <div className="card relative overflow-hidden p-8 md:p-10">
+          <div className="card relative overflow-hidden p-5 sm:p-8 md:p-10">
             <div className="pointer-events-none absolute -right-10 -top-14 h-48 w-48 rounded-full bg-brand/20 blur-3xl" />
             <div className="relative flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-left">
               <div className="max-w-lg">
@@ -321,14 +321,14 @@ export default function HomeSection({ rendered, first, newsletter }: {
     case "become_seller":
       return (
         <section className={cn("container-x", mt)} aria-label={section.title}>
-          <div className="card relative grid items-center gap-6 overflow-hidden p-8 md:grid-cols-[1fr_auto] md:p-10">
+          <div className="card relative grid items-center gap-5 overflow-hidden p-5 sm:gap-6 sm:p-8 md:grid-cols-[1fr_auto] md:p-10">
             <div className="pointer-events-none absolute -right-8 top-0 h-40 w-40 rounded-full bg-brand/20 blur-3xl" />
             <div className="relative">
               {st.eyebrow && <p className="chip border-brand/40 bg-brand/10 text-brand">{st.eyebrow}</p>}
               <h2 className="mt-3 font-display text-2xl font-bold md:text-3xl">{section.title}</h2>
               {section.description && <p className="mt-2 max-w-lg text-sm text-mute">{section.description}</p>}
             </div>
-            <Link href={st.ctaHref || "/sell"} className="btn btn-primary btn-lg relative shrink-0">
+            <Link href={st.ctaHref || "/sell"} className="btn btn-primary btn-lg relative w-full shrink-0 md:w-auto">
               {st.ctaText || "Start selling"} <ArrowRight size={16} />
             </Link>
           </div>

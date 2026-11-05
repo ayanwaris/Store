@@ -74,14 +74,14 @@ export default function CartClient({ items, totals, coupon, suggestions }: {
   if (!items.length) {
     return (
       <div className="mt-6">
-        <div className="card flex flex-col items-center p-14 text-center">
+        <div className="card flex flex-col items-center p-8 text-center sm:p-14">
           <ShoppingCart size={42} className="text-faint" />
           <p className="mt-4 font-display text-lg font-bold">Your cart is empty</p>
           <p className="mt-1 max-w-sm text-sm text-mute">Compare sellers, grab a deal, and your keys will be one click away.</p>
           <Link href="/search?sort=popular" className="btn btn-primary mt-6">Browse bestsellers</Link>
         </div>
         <h2 className="mt-10 font-display text-lg font-bold">Popular right now</h2>
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
           {suggestions.map((p) => <ProductCard key={p.id} p={p} />)}
         </div>
       </div>
@@ -89,16 +89,16 @@ export default function CartClient({ items, totals, coupon, suggestions }: {
   }
 
   return (
-    <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+    <div className="mt-4 grid gap-6 pb-24 sm:mt-6 lg:grid-cols-[1fr_360px] lg:pb-0">
       {/* items */}
       <div className="space-y-3">
         {items.map((i) => (
-          <div key={i.itemId} className="card flex items-center gap-4 p-3.5">
+          <div key={i.itemId} className="card flex gap-3 p-3 sm:items-center sm:gap-4 sm:p-3.5">
             <Link href={`/product/${i.slug}`} className="shrink-0">
               <CoverArt title={i.title} hue={i.coverHue} platform={i.platform} kind={i.kind} className="h-20 w-16 rounded-lg" />
             </Link>
             <div className="min-w-0 flex-1">
-              <Link href={`/product/${i.slug}`} className="line-clamp-1 font-semibold hover:text-brand-bright">{i.title}</Link>
+              <Link href={`/product/${i.slug}`} className="line-clamp-2 font-semibold leading-snug hover:text-brand-bright sm:line-clamp-1">{i.title}</Link>
               <p className="mt-0.5 text-xs text-faint">
                 Sold by <Link href={`/store/${i.sellerSlug}`} className="text-mute hover:text-brand-bright">{i.sellerName}</Link>
                 {" "}· {i.region}
@@ -107,31 +107,35 @@ export default function CartClient({ items, totals, coupon, suggestions }: {
               {i.valid && i.stock < i.quantity && (
                 <p className="mt-1 text-xs font-semibold text-amber-300">Only {i.stock} left — quantity will be adjusted</p>
               )}
-              <div className="mt-2 flex items-center gap-1.5">
-                <button
-                  className="btn btn-outline btn-sm !px-2"
-                  disabled={busy === i.itemId || i.quantity <= 1}
-                  onClick={() => update(i.itemId, { quantity: i.quantity - 1 })}
-                  aria-label="Decrease"
-                ><Minus size={13} /></button>
-                <span className="w-8 text-center text-sm font-bold">{i.quantity}</span>
-                <button
-                  className="btn btn-outline btn-sm !px-2"
-                  disabled={busy === i.itemId || i.quantity >= Math.min(i.stock, 10)}
-                  onClick={() => update(i.itemId, { quantity: i.quantity + 1 })}
-                  aria-label="Increase"
-                ><Plus size={13} /></button>
-                <button
-                  className="btn btn-ghost btn-sm text-rose-300"
-                  disabled={busy === i.itemId}
-                  onClick={() => update(i.itemId, { remove: true })}
-                  aria-label="Remove"
-                >
-                  {busy === i.itemId ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                </button>
+              <div className="mt-2 flex items-center justify-between gap-2 sm:justify-start">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    className="btn btn-outline btn-sm min-w-10 !px-2"
+                    disabled={busy === i.itemId || i.quantity <= 1}
+                    onClick={() => update(i.itemId, { quantity: i.quantity - 1 })}
+                    aria-label="Decrease"
+                  ><Minus size={13} /></button>
+                  <span className="w-8 text-center text-sm font-bold">{i.quantity}</span>
+                  <button
+                    className="btn btn-outline btn-sm min-w-10 !px-2"
+                    disabled={busy === i.itemId || i.quantity >= Math.min(i.stock, 10)}
+                    onClick={() => update(i.itemId, { quantity: i.quantity + 1 })}
+                    aria-label="Increase"
+                  ><Plus size={13} /></button>
+                  <button
+                    className="btn btn-ghost btn-sm min-w-10 text-rose-300"
+                    disabled={busy === i.itemId}
+                    onClick={() => update(i.itemId, { remove: true })}
+                    aria-label="Remove"
+                  >
+                    {busy === i.itemId ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                  </button>
+                </div>
+                {/* phones: the line price sits next to the quantity controls */}
+                <p className="font-display text-base font-bold sm:hidden">{fmtEUR(i.price * i.quantity)}</p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="hidden text-right sm:block">
               <p className="font-display text-lg font-bold">{fmtEUR(i.price * i.quantity)}</p>
               {i.quantity > 1 && <p className="text-[11px] text-faint">{fmtEUR(i.price)} each</p>}
             </div>
@@ -142,7 +146,7 @@ export default function CartClient({ items, totals, coupon, suggestions }: {
 
       {/* summary */}
       <div className="lg:sticky lg:top-36 h-fit">
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="font-display font-bold">Order summary</h2>
 
           {coupon.code ? (
@@ -156,8 +160,11 @@ export default function CartClient({ items, totals, coupon, suggestions }: {
             <div className="mt-4">
               <div className="flex gap-2">
                 <input
-                  className="input flex-1 uppercase"
+                  className="input min-w-0 flex-1 uppercase"
                   placeholder="Coupon code (try WELCOME10)"
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                  spellCheck={false}
                   value={couponInput}
                   onChange={(e) => setCouponInput(e.target.value)}
                 />
@@ -187,6 +194,17 @@ export default function CartClient({ items, totals, coupon, suggestions }: {
           <p className="mt-3 text-center text-[11px] leading-relaxed text-faint">
             Instant key delivery after payment. Buyer protection included on every order.
           </p>
+        </div>
+      </div>
+
+      {/* phones: total + checkout always within thumb reach */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-panel/95 backdrop-blur lg:hidden">
+        <div className="container-x flex items-center gap-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-faint">Total</p>
+            <p className="font-display text-lg font-bold leading-tight text-brand-bright">{fmtEUR(totals.total)}</p>
+          </div>
+          <Link href="/checkout" className="btn btn-primary ml-auto flex-1 sm:max-w-xs sm:flex-none">Checkout</Link>
         </div>
       </div>
     </div>

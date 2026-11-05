@@ -104,8 +104,8 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
       </div>
 
       {/* ------------------------------- banners ------------------------------- */}
-      <div className="card p-5">
-        <div className="flex items-center justify-between">
+      <div className="card p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-3">
           <h3 className="font-display font-bold">Homepage banners</h3>
           <button className="btn btn-outline btn-sm" onClick={() => { setShowBnrForm(true); setBnrEdit(null); setBnrForm({ title: "", subtitle: "", ctaText: "", ctaHref: "", hue: 265 }); }}>
             <PlusCircle size={13} /> Add
@@ -180,7 +180,7 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
           <div className="space-y-3">
             <div><label className="label">Title</label><input className="input" value={bnrForm.title} onChange={(e) => setBnrForm({ ...bnrForm, title: e.target.value })} /></div>
             <div><label className="label">Subtitle</label><input className="input" value={bnrForm.subtitle} onChange={(e) => setBnrForm({ ...bnrForm, subtitle: e.target.value })} /></div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div><label className="label">CTA text</label><input className="input" value={bnrForm.ctaText} onChange={(e) => setBnrForm({ ...bnrForm, ctaText: e.target.value })} placeholder="Shop now" /></div>
               <div><label className="label">CTA link</label><input className="input" value={bnrForm.ctaHref} onChange={(e) => setBnrForm({ ...bnrForm, ctaHref: e.target.value })} placeholder="/category/games" /></div>
             </div>
@@ -204,9 +204,9 @@ export default function CatalogClient({ categories, banners }: { categories: Cat
 
 function Modal({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="card animate-pop relative w-full max-w-sm p-6">
+      <div className="card animate-pop relative max-h-[92dvh] w-full max-w-sm overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] max-sm:rounded-b-none sm:p-6">
         <button className="btn btn-ghost btn-sm absolute right-3 top-3" onClick={onClose}><X size={16} /></button>
         <h3 className="font-display text-lg font-bold">{title}</h3>
         <div className="mt-4">{children}</div>

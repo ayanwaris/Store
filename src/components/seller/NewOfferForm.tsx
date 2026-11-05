@@ -54,34 +54,34 @@ export default function NewOfferForm() {
   };
 
   return (
-    <div className="card space-y-5 p-6">
+    <div className="card space-y-5 p-4 sm:p-6">
       {/* product picker */}
       <div>
         <label className="label">Catalog product</label>
         {selected ? (
-          <div className="flex items-center justify-between rounded-xl border border-brand/40 bg-brand/5 px-4 py-3">
-            <div>
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-brand/40 bg-brand/5 px-4 py-3">
+            <div className="min-w-0">
               <p className="text-sm font-bold">{selected.title}</p>
               <p className="text-xs text-faint">{selected.platform} · {selected.kind} · RRP {fmtEUR(selected.rrp)}</p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>Change</button>
+            <button className="btn btn-ghost btn-sm shrink-0" onClick={() => setSelected(null)}>Change</button>
           </div>
         ) : (
           <div className="relative">
-            <input className="input" placeholder="Search catalog…" value={q} onChange={(e) => setQ(e.target.value)} />
-            <div className="card absolute left-0 right-0 top-full z-20 mt-1.5 max-h-60 overflow-y-auto p-1.5">
+            <input className="input" placeholder="Search catalog…" enterKeyHint="search" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} />
+            <div className="card absolute left-0 right-0 top-full z-20 mt-1.5 max-h-60 overflow-y-auto overscroll-contain p-1.5">
               {searching && <p className="p-3 text-xs text-faint">Searching…</p>}
               {!searching && results.length === 0 && (
                 <p className="flex items-center gap-2 p-3 text-xs text-faint"><PackageSearch size={14} /> No products match.</p>
               )}
               {results.map((p) => (
                 <button key={p.id} onClick={() => setSelected(p)}
-                  className={cn("flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-white/4")}>
-                  <span>
+                  className={cn("flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-sm hover:bg-white/4 sm:py-2")}>
+                  <span className="min-w-0">
                     <span className="block font-medium">{p.title}</span>
                     <span className="text-[11px] text-faint">{p.platform} · {p.kind}</span>
                   </span>
-                  <span className="text-xs text-mute">RRP {fmtEUR(p.rrp)}</span>
+                  <span className="shrink-0 text-xs text-mute">RRP {fmtEUR(p.rrp)}</span>
                 </button>
               ))}
             </div>
@@ -92,7 +92,7 @@ export default function NewOfferForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label">Your price (EUR)</label>
-          <input className="input" type="number" min={0.49} max={5000} step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="34.99" />
+          <input className="input" type="number" inputMode="decimal" min={0.49} max={5000} step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="34.99" />
         </div>
         <div>
           <label className="label">Region</label>

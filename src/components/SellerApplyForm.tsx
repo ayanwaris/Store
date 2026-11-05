@@ -13,7 +13,7 @@ export default function SellerApplyForm({ heading = "Apply to become a seller" }
 
   return (
     <form
-      className="card p-6"
+      className="card p-5 sm:p-6"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -37,7 +37,7 @@ export default function SellerApplyForm({ heading = "Apply to become a seller" }
       <div className="mt-5 space-y-4">
         <div>
           <label className="label" htmlFor="storeName">Store name</label>
-          <input id="storeName" className="input" required minLength={3} maxLength={40} value={storeName}
+          <input id="storeName" className="input" autoComplete="organization" required minLength={3} maxLength={40} value={storeName}
             onChange={(e) => setStoreName(e.target.value)} placeholder="e.g. Meridian Keys" />
         </div>
         <div>

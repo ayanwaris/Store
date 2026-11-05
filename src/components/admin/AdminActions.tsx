@@ -69,7 +69,7 @@ export function SellerActions({ id, status }: { id: string; status: string }) {
   const { run, busy } = useAdminAction();
   if (status === "pending") {
     return (
-      <div className="flex justify-end gap-1.5">
+      <div className="flex flex-wrap justify-end gap-1.5">
         <button className="btn btn-primary btn-sm" disabled={busy}
           onClick={() => run("PATCH", `/api/admin/sellers/${id}`, { status: "approved" }, "Seller approved")}>
           <Check size={13} /> Approve
@@ -82,7 +82,7 @@ export function SellerActions({ id, status }: { id: string; status: string }) {
     );
   }
   return (
-    <div className="flex justify-end gap-1.5">
+    <div className="flex flex-wrap justify-end gap-1.5">
       {status !== "suspended" ? (
         <button className="btn btn-danger btn-sm" disabled={busy}
           onClick={() => run("PATCH", `/api/admin/sellers/${id}`, { status: "suspended" }, "Seller suspended")}>
@@ -126,7 +126,7 @@ export function CommissionEditor({ id, value }: { id: string; value: number }) {
 export function ProductToggles({ id, active, featured }: { id: string; active: boolean; featured: boolean }) {
   const { run } = useAdminAction();
   return (
-    <div className="flex justify-end gap-1.5">
+    <div className="flex flex-wrap justify-end gap-1.5">
       <button className="btn btn-ghost btn-sm" title={featured ? "Remove from featured" : "Feature on homepage"}
         onClick={() => run("PATCH", `/api/admin/products/${id}`, { featured: !featured }, featured ? "Unfeatured" : "Featured")}>
         <Star size={14} className={featured ? "fill-amber-400 text-amber-400" : "text-mute"} />
@@ -144,7 +144,7 @@ export function ProductToggles({ id, active, featured }: { id: string; active: b
 export function CouponToggle({ id, active }: { id: string; active: boolean }) {
   const { run } = useAdminAction();
   return (
-    <div className="flex justify-end gap-1.5">
+    <div className="flex flex-wrap justify-end gap-1.5">
       <button className="btn btn-outline btn-sm"
         onClick={() => run("PATCH", `/api/admin/coupons/${id}`, { active: !active }, active ? "Coupon disabled" : "Coupon enabled")}>
         <BadgePercent size={13} /> {active ? "Disable" : "Enable"}
@@ -162,7 +162,7 @@ export function CouponToggle({ id, active }: { id: string; active: boolean }) {
 export function PayoutActions({ id }: { id: string }) {
   const { run, busy } = useAdminAction();
   return (
-    <div className="flex justify-end gap-1.5">
+    <div className="flex flex-wrap justify-end gap-1.5">
       <button className="btn btn-primary btn-sm" disabled={busy}
         onClick={() => run("PATCH", `/api/admin/payouts/${id}`, { status: "paid" }, "Payout marked paid")}>
         <Check size={13} /> Mark paid
@@ -180,7 +180,7 @@ export function PayoutActions({ id }: { id: string }) {
 export function RefundActions({ id }: { id: string }) {
   const { run, busy } = useAdminAction();
   return (
-    <div className="flex justify-end gap-1.5">
+    <div className="flex flex-wrap justify-end gap-1.5">
       <button className="btn btn-primary btn-sm" disabled={busy}
         onClick={() => run("PATCH", `/api/admin/refunds/${id}`, { approve: true }, "Refund approved — keys revoked, ledger reversed")}>
         <Check size={13} /> Approve

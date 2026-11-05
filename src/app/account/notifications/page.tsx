@@ -16,7 +16,7 @@ export default async function NotificationsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-xl font-bold">Notifications</h2>
           <p className="mt-0.5 text-sm text-faint">{rows.filter((r) => !r.read).length} unread</p>
@@ -24,7 +24,7 @@ export default async function NotificationsPage() {
         <MarkAllReadButton />
       </div>
       {rows.length === 0 ? (
-        <div className="card mt-5 flex flex-col items-center p-12 text-center">
+        <div className="card mt-5 flex flex-col items-center p-8 text-center sm:p-12">
           <Bell size={36} className="text-faint" />
           <p className="mt-3 font-semibold">Quiet in here</p>
           <p className="mt-1 text-sm text-mute">Order updates, sales alerts and seller messages will appear.</p>

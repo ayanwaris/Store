@@ -11,7 +11,7 @@ export function RequestPayoutButton({ balance }: { balance: number }) {
   const eligible = balance >= 25;
   return (
     <button
-      className="btn btn-primary"
+      className="btn btn-primary w-full sm:w-auto"
       disabled={!eligible || busy}
       title={eligible ? "Request payout" : "Minimum payout is €25"}
       onClick={async () => {

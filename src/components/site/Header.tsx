@@ -119,12 +119,15 @@ export default function Header({ user, categories, cartCount, unread, promo, the
   return (
     // sticky wrapper = promo banner + main bar + category bar, so they scroll away / stick together.
     // With no banner the main bar is the first element, i.e. the navbar sits flush at the top.
+    <>
+    {/* phones: the announcement scrolls away so it doesn't eat screen space; md+: it sticks with the bars */}
+    {promo && <div className="md:hidden"><PromoBanner promo={promo} /></div>}
     <header className="sticky top-0 z-40">
-      {promo && <PromoBanner promo={promo} />}
+      {promo && <div className="hidden md:block"><PromoBanner promo={promo} /></div>}
 
       {/* ------------------------------ main bar ------------------------------ */}
       <div className="glass relative z-30 border-b border-line">
-        <div className="container-x relative flex h-16 items-center gap-3">
+        <div className="container-x relative flex h-14 items-center gap-1.5 sm:h-16 sm:gap-3">
           <button className="btn btn-ghost btn-sm -ml-2" onClick={() => setMobileOpen(true)} aria-label="Open menu">
             <Menu size={20} />
           </button>
@@ -142,12 +145,13 @@ export default function Header({ user, categories, cartCount, unread, promo, the
             <SearchBar variant="nav" />
           </div>
 
-          <div className="ml-auto flex items-center gap-1">
-            <Link href="/sell" className="btn btn-ghost btn-sm hidden lg:inline-flex">
+          <div className="ml-auto flex min-w-0 items-center gap-0.5 sm:gap-1">
+            <Link href="/sell" className="btn btn-ghost btn-sm hidden! lg:inline-flex!">
               <Store size={16} /> Sell
             </Link>
 
-            {themeToggle && <ThemeToggle />}
+            {/* phones: the theme switch lives in the menu drawer to save room in the bar */}
+            {themeToggle && <span className="hidden sm:inline-flex"><ThemeToggle /></span>}
 
             <Link href="/cart" className="btn btn-ghost btn-sm relative" aria-label="Cart">
               <ShoppingCart size={18} />
@@ -174,7 +178,7 @@ export default function Header({ user, categories, cartCount, unread, promo, the
                       Mark all read
                     </button>
                   </div>
-                  <div className="max-h-[min(20rem,60vh)] overflow-y-auto">
+                  <div className="max-h-[min(20rem,60dvh)] overflow-y-auto overscroll-contain">
                     {notifs.length === 0 && (
                       <p className="p-5 text-center text-sm text-faint">You&apos;re all caught up.</p>
                     )}
@@ -210,7 +214,7 @@ export default function Header({ user, categories, cartCount, unread, promo, the
                   >
                     {user.name[0]?.toUpperCase()}
                   </span>
-                  <ChevronDown size={14} className={cn("text-mute transition-transform duration-200", accountOpen && "rotate-180")} />
+                  <ChevronDown size={14} className={cn("hidden text-mute transition-transform duration-200 sm:block", accountOpen && "rotate-180")} />
                 </button>
                 <div id="account-menu" aria-hidden={!accountOpen} className={cn(PANEL, "w-72 max-w-full", accountOpen ? PANEL_OPEN : PANEL_CLOSED)}>
                   <div className="flex items-center gap-3 border-b border-line bg-brand/5 px-4 py-3.5">
@@ -256,7 +260,7 @@ export default function Header({ user, categories, cartCount, unread, promo, the
             ) : (
               <>
                 <Link href="/login" className="btn btn-ghost btn-sm">Log in</Link>
-                <Link href="/register" className="btn btn-primary btn-sm">Sign up</Link>
+                <Link href="/register" className="btn btn-primary btn-sm max-[359px]:hidden!">Sign up</Link>
               </>
             )}
           </div>
@@ -326,10 +330,13 @@ export default function Header({ user, categories, cartCount, unread, promo, the
       {mobileOpen && (
         <div className="fixed inset-0 z-50">
           <div className="animate-fade-in absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
-          <div className="animate-fade-in absolute left-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto border-r border-line bg-panel p-4 shadow-2xl shadow-black/40">
+          <div className="animate-fade-in absolute left-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto overscroll-contain border-r border-line bg-panel p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] pl-[max(1rem,env(safe-area-inset-left))] shadow-2xl shadow-black/40">
             <div className="mb-4 flex items-center justify-between">
               <span className="font-display font-bold">KEY<span className="text-brand">HAVEN</span></span>
-              <button onClick={() => setMobileOpen(false)} className="btn btn-ghost btn-sm" aria-label="Close"><X size={18} /></button>
+              <div className="flex items-center gap-1">
+                {themeToggle && <span className="sm:hidden"><ThemeToggle /></span>}
+                <button onClick={() => setMobileOpen(false)} className="btn btn-ghost btn-sm" aria-label="Close"><X size={18} /></button>
+              </div>
             </div>
             <div className="md:hidden"><SearchBar variant="hero" /></div>
             <p className="mb-2 mt-5 text-xs font-bold uppercase tracking-wider text-faint">Categories</p>
@@ -368,5 +375,6 @@ export default function Header({ user, categories, cartCount, unread, promo, the
         </div>
       )}
     </header>
+    </>
   );
 }

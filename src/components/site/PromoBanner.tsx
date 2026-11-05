@@ -18,7 +18,7 @@ export default function PromoBanner({ promo }: { promo: PromoConfig }) {
   const href = promo.linkUrl && isSafeUrl(promo.linkUrl) ? promo.linkUrl : "";
   const label = promo.linkLabel.trim();
   const content = (
-    <span className="mx-auto flex max-w-full items-center justify-center gap-2 text-center text-[13px] font-semibold leading-snug">
+    <span className="mx-auto flex max-w-full items-center justify-center gap-2 text-center text-xs font-semibold leading-snug sm:text-[13px]">
       <span className="min-w-0 [overflow-wrap:anywhere]">{promo.text}</span>
       {href && label && (
         <span className="inline-flex shrink-0 items-center gap-1 underline underline-offset-2">
@@ -30,7 +30,7 @@ export default function PromoBanner({ promo }: { promo: PromoConfig }) {
 
   return (
     <div role="region" aria-label="Announcement" className="relative z-10" style={style}>
-      <div className="container-x py-2">
+      <div className="container-x py-1.5 sm:py-2">
         {href ? (
           isExternal(href) ? (
             <a href={href} target="_blank" rel="noopener noreferrer" className="block">{content}</a>

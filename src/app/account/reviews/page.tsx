@@ -24,7 +24,7 @@ export default async function MyReviewsPage() {
       <h2 className="font-display text-xl font-bold">My reviews</h2>
       <p className="mt-0.5 text-sm text-faint">Feedback you&apos;ve published as a verified buyer.</p>
       {rows.length === 0 ? (
-        <div className="card mt-5 flex flex-col items-center p-12 text-center">
+        <div className="card mt-5 flex flex-col items-center p-8 text-center sm:p-12">
           <Star size={36} className="text-faint" />
           <p className="mt-3 font-semibold">No reviews yet</p>
           <p className="mt-1 text-sm text-mute">After a purchase lands in your library you can review the product and its seller.</p>

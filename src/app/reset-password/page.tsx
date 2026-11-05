@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "New password" };
 export default async function ResetPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;
   return (
-    <div className="container-x flex justify-center py-16">
+    <div className="container-x flex justify-center py-8 sm:py-16">
       <div className="w-full max-w-md">
         {token ? (
           <ResetForm token={token} />

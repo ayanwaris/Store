@@ -73,6 +73,9 @@ export default function GlassSelect({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [pos, setPos] = useState<{ left: number; top: number; minWidth: number; maxHeight: number; up: boolean } | null>(null);
+  const [sheet, setSheet] = useState(false); // phones: open as a bottom sheet instead of a floating menu
+  const sheetRef = useRef(false);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   const triggerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -80,7 +83,7 @@ export default function GlassSelect({
 
   const place = useCallback(() => {
     const el = triggerRef.current;
-    if (!el) return;
+    if (!el || sheetRef.current) return;
     const r = el.getBoundingClientRect();
     const gap = 6;
     const below = window.innerHeight - r.bottom - gap - 12;
@@ -94,7 +97,10 @@ export default function GlassSelect({
   const openMenu = () => {
     if (disabled || !options.length) return;
     setActive(selectedIdx >= 0 ? selectedIdx : 0);
-    place();
+    const asSheet = window.innerWidth < 640;
+    sheetRef.current = asSheet;
+    setSheet(asSheet);
+    if (!asSheet) place();
     setOpen(true);
   };
   const closeMenu = useCallback(() => setOpen(false), []);
@@ -117,7 +123,8 @@ export default function GlassSelect({
     if (!open) return;
     const onDown = (e: PointerEvent) => {
       const t = e.target as Node;
-      if (menuRef.current?.contains(t) || triggerRef.current?.contains(t)) return;
+      // the sheet's dark backdrop closes on its own click (so the tap can't fall through to what's underneath)
+      if (menuRef.current?.contains(t) || triggerRef.current?.contains(t) || t === backdropRef.current) return;
       closeMenu();
     };
     const onKey = (e: globalThis.KeyboardEvent) => { if (e.key === "Escape") closeMenu(); };
@@ -132,6 +139,14 @@ export default function GlassSelect({
       window.removeEventListener("scroll", place, true);
     };
   }, [open, place, closeMenu]);
+
+  // while the bottom sheet is open the page behind it must not scroll
+  useEffect(() => {
+    if (!open || !sheet) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open, sheet]);
 
   // scroll the highlighted row into view
   useEffect(() => {
@@ -187,14 +202,22 @@ export default function GlassSelect({
         <ChevronDown size={15} className={cn("glass-select-chevron shrink-0", open && "rotate-180")} aria-hidden />
       </div>
 
-      {open && pos && typeof document !== "undefined" && createPortal(
+      {open && (pos || sheet) && typeof document !== "undefined" && createPortal(
+        <>
+        {sheet && (
+          <div
+            ref={backdropRef}
+            className="glass-select-backdrop"
+            onClick={(e) => { e.stopPropagation(); closeMenu(); }}
+          />
+        )}
         <div
           ref={menuRef}
           id={listId}
           role="listbox"
           aria-label={ariaLabel}
-          className={cn("glass-select-menu", pos.up && "glass-select-menu-up")}
-          style={{ left: pos.left, top: pos.top, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
+          className={cn("popover glass-select-menu", sheet ? "glass-select-sheet" : pos?.up && "glass-select-menu-up")}
+          style={!sheet && pos ? { left: pos.left, top: pos.top, minWidth: pos.minWidth, maxHeight: pos.maxHeight } : undefined}
           // React events bubble through portals — keep clicks from reaching a parent button/row
           onClick={(e) => e.stopPropagation()}
         >
@@ -214,11 +237,12 @@ export default function GlassSelect({
                 onClick={() => choose(o)}
               >
                 <span className="truncate">{o.label}</span>
-                {selected && <Check size={14} className="shrink-0" aria-hidden />}
+                {selected && <span className="glass-select-tick"><Check size={14} aria-hidden /></span>}
               </div>
             );
           })}
-        </div>,
+        </div>
+        </>,
         document.body,
       )}
     </>

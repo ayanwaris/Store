@@ -22,7 +22,7 @@ export default async function SellerReviewsPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-      <div className="card h-fit p-6 text-center">
+      <div className="card h-fit p-5 text-center sm:p-6">
         <Star size={28} className="mx-auto fill-amber-400 text-amber-400" />
         <p className="mt-2 font-display text-4xl font-bold">{avg ? avg.toFixed(1) : "—"}</p>
         <p className="text-xs text-faint">{rows.length} written review{rows.length === 1 ? "" : "s"} shown (full history {">"} counts)</p>
@@ -40,11 +40,11 @@ export default async function SellerReviewsPage() {
       </div>
       <div className="space-y-3">
         {rows.length === 0 && (
-          <div className="card p-10 text-center text-sm text-mute">No written reviews yet.</div>
+          <div className="card p-6 text-center text-sm text-mute sm:p-10">No written reviews yet.</div>
         )}
         {rows.map((r) => (
           <div key={String(r.id)} className="card p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
               <p className="text-sm font-semibold">{String(r.authorName)}</p>
               <span className="flex items-center gap-3">
                 <RatingStars value={Number(r.rating)} />

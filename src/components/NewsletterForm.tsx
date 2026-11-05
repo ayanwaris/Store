@@ -52,8 +52,11 @@ export default function NewsletterForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={config.placeholder}
-        className="input flex-1"
+        className="input min-w-0 flex-1"
         type="email"
+        inputMode="email"
+        autoCapitalize="none"
+        spellCheck={false}
         autoComplete="email"
         required
         aria-label="Email address"

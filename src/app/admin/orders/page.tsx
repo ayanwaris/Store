@@ -31,8 +31,8 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
           <h2 className="font-display text-xl font-bold">Orders</h2>
           <p className="mt-0.5 text-sm text-faint">Platform-wide order and payment status.</p>
         </div>
-        <form method="get" className="flex gap-2">
-          <input name="q" className="input w-56" placeholder="Order # or buyer email…" defaultValue={q ?? ""} />
+        <form method="get" className="flex w-full gap-2 sm:w-auto">
+          <input name="q" className="input min-w-0 flex-1 sm:w-56 sm:flex-none" enterKeyHint="search" autoCapitalize="none" placeholder="Order # or buyer email…" defaultValue={q ?? ""} />
           <button className="btn btn-outline">Search</button>
         </form>
       </div>
@@ -45,22 +45,22 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         ))}
       </div>
 
-      <div className="card mt-5 overflow-x-auto">
-        <table className="table-x min-w-[800px]">
+      <div className="card mt-5 overflow-x-auto p-3 sm:p-0">
+        <table className="table-x table-stack min-w-[800px]">
           <thead><tr><th>Order</th><th>Buyer</th><th>Placed</th><th>Items</th><th>Payment</th><th>Status</th><th className="text-right">Total</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={String(r.id)}>
-                <td><Link href={`/admin/orders/${r.id}`} className="font-semibold hover:text-brand-bright">{String(r.number)}</Link></td>
-                <td>
+                <td data-label="Order"><Link href={`/admin/orders/${r.id}`} className="font-semibold hover:text-brand-bright">{String(r.number)}</Link></td>
+                <td data-label="Buyer">
                   <p className="text-sm">{String(r.buyerName)}</p>
                   <p className="text-xs text-faint">{String(r.buyerEmail)}</p>
                 </td>
-                <td className="text-mute">{formatDate(String(r.createdAt))}</td>
-                <td className="text-mute">{String(r.items)}</td>
-                <td><span className={`chip border text-[10px] ${statusTone(String(r.paymentStatus ?? "initiated"))}`}>{String(r.paymentStatus ?? "—")}</span></td>
-                <td><span className={`chip border text-[10px] ${statusTone(String(r.status))}`}>{ORDER_STATUS_LABEL[String(r.status)] ?? String(r.status)}</span></td>
-                <td className="text-right font-display font-bold">{fmtEUR(Number(r.total))}</td>
+                <td data-label="Placed" className="text-mute">{formatDate(String(r.createdAt))}</td>
+                <td data-label="Items" className="text-mute">{String(r.items)}</td>
+                <td data-label="Payment"><span className={`chip border text-[10px] ${statusTone(String(r.paymentStatus ?? "initiated"))}`}>{String(r.paymentStatus ?? "—")}</span></td>
+                <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(String(r.status))}`}>{ORDER_STATUS_LABEL[String(r.status)] ?? String(r.status)}</span></td>
+                <td data-label="Total" className="text-right font-display font-bold">{fmtEUR(Number(r.total))}</td>
               </tr>
             ))}
           </tbody>

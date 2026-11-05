@@ -25,7 +25,7 @@ export function LoginForm({ next }: { next?: string }) {
 
   return (
     <form
-      className="card p-6"
+      className="card p-5 sm:p-6"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -45,18 +45,18 @@ export function LoginForm({ next }: { next?: string }) {
       <div className="mt-5 space-y-4">
         <div>
           <label className="label" htmlFor="email">Email</label>
-          <input id="email" className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          <input id="email" className="input" type="email" autoComplete="email" autoCapitalize="none" spellCheck={false} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         </div>
         <div>
           <label className="label" htmlFor="password">Password</label>
-          <input id="password" className="input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+          <input id="password" className="input" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
         </div>
         <button className="btn btn-primary w-full" disabled={busy}>
           {busy ? <Loader2 size={15} className="animate-spin" /> : <KeyRound size={15} />} Log in
         </button>
-        <div className="flex items-center justify-between text-sm">
-          <Link href="/forgot-password" className="link">Forgot password?</Link>
-          <Link href="/register" className="font-semibold text-brand-bright hover:underline">Create account</Link>
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm">
+          <Link href="/forgot-password" className="link py-1">Forgot password?</Link>
+          <Link href="/register" className="py-1 font-semibold text-brand-bright hover:underline">Create account</Link>
         </div>
       </div>
     </form>
@@ -74,7 +74,7 @@ export function RegisterForm({ next }: { next?: string }) {
 
   return (
     <form
-      className="card p-6"
+      className="card p-5 sm:p-6"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -94,15 +94,15 @@ export function RegisterForm({ next }: { next?: string }) {
       <div className="mt-5 space-y-4">
         <div>
           <label className="label" htmlFor="name">Display name</label>
-          <input id="name" className="input" required minLength={2} maxLength={40} value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" />
+          <input id="name" className="input" autoComplete="name" required minLength={2} maxLength={40} value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" />
         </div>
         <div>
           <label className="label" htmlFor="email2">Email</label>
-          <input id="email2" className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          <input id="email2" className="input" type="email" autoComplete="email" autoCapitalize="none" spellCheck={false} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         </div>
         <div>
           <label className="label" htmlFor="password2">Password</label>
-          <input id="password2" className="input" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 8 characters" />
+          <input id="password2" className="input" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 8 characters" />
           <div className="mt-2 flex gap-1">
             {[1, 2, 3].map((i) => (
               <span key={i} className={`h-1 flex-1 rounded-full transition-colors ${strength >= i ? (i === 1 ? "bg-rose-400" : i === 2 ? "bg-amber-400" : "bg-mint") : "bg-line"}`} />
@@ -129,7 +129,7 @@ export function ForgotForm() {
 
   return (
     <form
-      className="card p-6"
+      className="card p-5 sm:p-6"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -149,7 +149,7 @@ export function ForgotForm() {
       <div className="mt-5 space-y-4">
         <div>
           <label className="label" htmlFor="email3">Email</label>
-          <input id="email3" className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          <input id="email3" className="input" type="email" autoComplete="email" autoCapitalize="none" spellCheck={false} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         </div>
         <button className="btn btn-primary w-full" disabled={busy}>
           {busy ? <Loader2 size={15} className="animate-spin" /> : <MailCheck size={15} />} Send reset link
@@ -173,7 +173,7 @@ export function ResetForm({ token }: { token: string }) {
 
   return (
     <form
-      className="card p-6"
+      className="card p-5 sm:p-6"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -191,7 +191,7 @@ export function ResetForm({ token }: { token: string }) {
       <div className="mt-5 space-y-4">
         <div>
           <label className="label" htmlFor="password3">New password</label>
-          <input id="password3" className="input" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 8 characters" />
+          <input id="password3" className="input" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 8 characters" />
         </div>
         <button className="btn btn-primary w-full" disabled={busy}>
           {busy ? <Loader2 size={15} className="animate-spin" /> : null} Update password

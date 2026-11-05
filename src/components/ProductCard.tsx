@@ -23,20 +23,20 @@ export default function ProductCard({ p, variant = "default" }: { p: PCard; vari
   const lowStock = !outOfStock && p.stock <= LOW_STOCK;
 
   return (
-    <Link href={`/product/${p.slug}`} className="card hover-lift group flex h-full min-w-0 flex-col overflow-hidden">
+    <Link href={`/product/${p.slug}`} className="card hover-lift group flex h-full min-w-0 flex-col overflow-hidden active:scale-[0.985] sm:active:scale-100">
       <div className="relative">
         <CoverArt
           title={p.title} hue={p.coverHue} platform={p.platform} kind={p.kind}
           className={cn("w-full rounded-none", variant === "landscape" ? "aspect-[16/10]" : "aspect-[4/4.4]")}
         />
         {discount > 4 && (
-          <span className="bg-gold text-on-brand absolute left-2.5 top-2.5 rounded-lg px-2 py-0.5 text-xs font-bold shadow-lg shadow-black/25">
+          <span className="bg-gold text-on-brand absolute left-2 top-2 sm:left-2.5 sm:top-2.5 rounded-lg px-2 py-0.5 text-xs font-bold shadow-lg shadow-black/25">
             −{discount}%
           </span>
         )}
         {hasOffers && !outOfStock && (
           <span
-            className="chip absolute right-2.5 top-2.5 backdrop-blur"
+            className="chip absolute right-2 top-2 backdrop-blur sm:right-2.5 sm:top-2.5"
             // always sits on the dark cover art, so it keeps fixed light-on-dark colours in both themes
             style={{ color: "#6ee7b7", background: "rgba(0,0,0,0.62)", borderColor: "rgba(255,255,255,0.16)" }}
           >
@@ -45,7 +45,7 @@ export default function ProductCard({ p, variant = "default" }: { p: PCard; vari
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-3.5">
+      <div className="flex flex-1 flex-col p-3 sm:p-3.5">
         <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
           <span className="chip">{KIND_LABEL[p.kind] ?? p.kind}</span>
         </div>
@@ -65,23 +65,23 @@ export default function ProductCard({ p, variant = "default" }: { p: PCard; vari
           )}
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2.5">
+        <div className="mt-auto flex flex-col items-start gap-1 pt-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-2">
           {hasOffers ? (
             <div className="min-w-0">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-faint">
                 From {p.offerCount} seller{p.offerCount === 1 ? "" : "s"}
               </p>
-              <p className={cn("font-display text-lg font-bold leading-tight text-ink", outOfStock && "opacity-60")}>
+              <p className={cn("flex flex-wrap items-baseline gap-x-2 font-display text-lg font-bold leading-tight text-ink", outOfStock && "opacity-60")}>
                 {fmtEUR(p.minPrice!)}
                 {discount > 4 && (
-                  <span className="ml-2 text-xs font-medium text-faint line-through">{fmtEUR(p.rrp)}</span>
+                  <span className="text-xs font-medium text-faint line-through">{fmtEUR(p.rrp)}</span>
                 )}
               </p>
             </div>
           ) : (
             <span className="text-sm font-medium text-faint">Out of stock</span>
           )}
-          <div className="shrink-0 text-right text-[10px] leading-tight">
+          <div className="flex shrink-0 flex-wrap gap-x-2 text-[10px] leading-tight sm:block sm:text-right">
             {hasOffers && outOfStock && <p className="font-semibold text-rose-300">Out of stock</p>}
             {lowStock && <p className="font-semibold text-amber-300">Only {p.stock} left</p>}
             {p.sold > 0 && <p className="text-faint">{p.sold.toLocaleString()} sold</p>}

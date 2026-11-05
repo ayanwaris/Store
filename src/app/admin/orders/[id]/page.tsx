@@ -47,7 +47,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
   return (
     <div>
       <Link href="/admin/orders" className="btn btn-ghost btn-sm mb-4"><ArrowLeft size={14} /> All orders</Link>
-      <div className="card p-5">
+      <div className="card p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="font-display text-xl font-bold">{order.number}</h2>
@@ -70,44 +70,48 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
 
       <div className="card mt-4 overflow-hidden">
         <div className="border-b border-line px-5 py-3.5"><h3 className="font-display font-bold">Items</h3></div>
-        <table className="table-x">
+        <div className="p-3 sm:p-0">
+<table className="table-x table-stack">
           <thead><tr><th>Product</th><th>Seller</th><th>Keys</th><th>Status</th><th className="text-right">Amount</th></tr></thead>
           <tbody>
             {items.map((it) => (
               <tr key={it.id}>
-                <td><Link href={`/product/${it.slug}`} className="font-medium hover:text-brand-bright">{it.title}</Link></td>
-                <td className="text-mute">{it.storeName}</td>
-                <td className="text-xs text-mute">
+                <td data-full><Link href={`/product/${it.slug}`} className="font-medium hover:text-brand-bright">{it.title}</Link></td>
+                <td data-label="Seller" className="text-mute">{it.storeName}</td>
+                <td data-label="Keys" className="text-xs text-mute">
                   {keysByItem.filter((k) => k.orderItemId === it.id).map((k) => `${k.n} ${k.status}`).join(", ") || "—"}
                 </td>
-                <td><span className={`chip border text-[10px] ${statusTone(it.status)}`}>{it.status.replace("_", " ")}</span></td>
-                <td className="text-right font-display font-bold">{fmtEUR(it.price * it.quantity)}</td>
+                <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(it.status)}`}>{it.status.replace("_", " ")}</span></td>
+                <td data-label="Amount" className="text-right font-display font-bold">{fmtEUR(it.price * it.quantity)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+</div>
       </div>
 
       {refundRows.length > 0 && (
         <div className="card mt-4 overflow-hidden">
           <div className="border-b border-line px-5 py-3.5"><h3 className="font-display font-bold">Refund requests</h3></div>
-          <table className="table-x">
+          <div className="p-3 sm:p-0">
+<table className="table-x table-stack">
             <thead><tr><th>Item</th><th>Requested by</th><th>Reason</th><th>Status</th><th className="text-right">Amount</th><th className="text-right">Actions</th></tr></thead>
             <tbody>
               {refundRows.map((r) => (
                 <tr key={String(r.id)}>
-                  <td className="font-medium">{String(r.title)}</td>
-                  <td className="text-mute">{String(r.buyerName)}</td>
-                  <td className="max-w-56 truncate text-xs text-mute">{String(r.reason ?? "—")}</td>
-                  <td><span className={`chip border text-[10px] ${statusTone(String(r.status))}`}>{String(r.status)}</span></td>
-                  <td className="text-right font-display font-bold">{fmtEUR(Number(r.amount))}</td>
-                  <td className="text-right">
+                  <td data-full className="font-medium">{String(r.title)}</td>
+                  <td data-label="Requested by" className="text-mute">{String(r.buyerName)}</td>
+                  <td data-label="Reason" className="max-w-56 truncate text-xs text-mute">{String(r.reason ?? "—")}</td>
+                  <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(String(r.status))}`}>{String(r.status)}</span></td>
+                  <td data-label="Amount" className="text-right font-display font-bold">{fmtEUR(Number(r.amount))}</td>
+                  <td data-label="Actions" className="text-right">
                     {r.status === "pending" && <RefundActions id={String(r.id)} />}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+</div>
         </div>
       )}
     </div>

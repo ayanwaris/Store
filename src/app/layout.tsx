@@ -28,6 +28,9 @@ export const metadata: Metadata = {
 export async function generateViewport(): Promise<Viewport> {
   const t = themeColors(await getThemeSettings());
   return {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover", // lets the page use the full screen on notched phones (safe-area padding is in globals.css)
     colorScheme: t.mode === "auto" ? "light dark" : t.mode,
     themeColor:
       t.mode === "auto"

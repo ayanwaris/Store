@@ -34,27 +34,27 @@ export default async function AdminSellers({ searchParams }: { searchParams: Pro
         ))}
       </div>
 
-      <div className="card mt-5 overflow-x-auto">
-        <table className="table-x min-w-[860px]">
+      <div className="card mt-5 overflow-x-auto p-3 sm:p-0">
+        <table className="table-x table-stack min-w-[860px]">
           <thead>
             <tr><th>Store</th><th>Owner</th><th>Status</th><th>Commission</th><th>Rating</th><th>Sales</th><th>Balance</th><th className="text-right">Actions</th></tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={String(r.id)}>
-                <td>
+                <td data-full>
                   <p className="font-semibold">{String(r.storeName)}</p>
                   <p className="text-xs text-faint">/store/{String(r.slug)} · since {formatDate(String(r.createdAt))}</p>
                 </td>
-                <td className="text-xs text-mute">{String(r.ownerName)}<br />{String(r.email)}</td>
-                <td><StatusPill status={String(r.status)} /></td>
-                <td>
+                <td data-label="Owner" className="text-xs text-mute">{String(r.ownerName)}<br />{String(r.email)}</td>
+                <td data-label="Status"><StatusPill status={String(r.status)} /></td>
+                <td data-label="Commission">
                   <CommissionEditor id={String(r.id)} value={Number(r.commissionRate)} />
                 </td>
-                <td className="text-mint">{Number(r.ratingAvg).toFixed(1)}% <span className="text-faint">({String(r.ratingCount)})</span></td>
-                <td className="text-mute">{String(r.totalSales)}</td>
-                <td className="font-semibold">{fmtEUR(Number(r.balance))}</td>
-                <td className="text-right">
+                <td data-label="Rating" className="text-mint">{Number(r.ratingAvg).toFixed(1)}% <span className="text-faint">({String(r.ratingCount)})</span></td>
+                <td data-label="Sales" className="text-mute">{String(r.totalSales)}</td>
+                <td data-label="Balance" className="font-semibold">{fmtEUR(Number(r.balance))}</td>
+                <td data-label="Actions" className="text-right">
                   <SellerActions id={String(r.id)} status={String(r.status)} />
                 </td>
               </tr>

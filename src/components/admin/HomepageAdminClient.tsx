@@ -286,7 +286,7 @@ export default function HomepageAdminClient({ initial, categories, labels }: {
 
   return (
     <div className="mt-5">
-      <div className="card sticky top-36 z-20 flex flex-wrap items-center gap-2 p-3">
+      <div className="card z-20 flex flex-wrap items-center gap-2 p-3 md:sticky md:top-36">
         <GlassSelect className="select max-w-56" value={adding} onChange={(e) => {
           const t = e.target.value as SectionType;
           if (!t) return;
@@ -299,7 +299,7 @@ export default function HomepageAdminClient({ initial, categories, labels }: {
         <button className="btn btn-outline btn-sm" type="button" onClick={() => { if (confirm("Replace the layout with the default homepage?")) set(DEFAULT_SECTIONS); }}>
           <RotateCcw size={13} /> Reset to default
         </button>
-        <span className="ml-auto text-xs text-faint">{dirty ? "Unsaved changes" : "All changes saved"}</span>
+        <span className="w-full text-xs text-faint sm:ml-auto sm:w-auto">{dirty ? "Unsaved changes" : "All changes saved"}</span>
         <button className="btn btn-primary btn-sm" disabled={!dirty || saving} onClick={save}>
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Save homepage
         </button>
@@ -318,8 +318,8 @@ export default function HomepageAdminClient({ initial, categories, labels }: {
                 <p className={cn("truncate text-sm font-semibold", !s.enabled && "text-faint line-through")}>{s.title || SECTION_META[s.type].label}</p>
                 <p className="truncate text-[11px] text-faint">{SECTION_META[s.type].label} — {SECTION_META[s.type].hint}</p>
               </div>
-              <button className={cn("btn btn-sm", s.enabled ? "btn-outline" : "btn-ghost")} type="button" onClick={() => patch(s.id, { enabled: !s.enabled })} aria-pressed={s.enabled}>
-                {s.enabled ? <><Eye size={13} /> Visible</> : <><EyeOff size={13} /> Hidden</>}
+              <button className={cn("btn btn-sm", s.enabled ? "btn-outline" : "btn-ghost")} type="button" onClick={() => patch(s.id, { enabled: !s.enabled })} aria-pressed={s.enabled} aria-label={s.enabled ? "Visible — tap to hide" : "Hidden — tap to show"}>
+                {s.enabled ? <><Eye size={13} /> <span className="hidden sm:inline">Visible</span></> : <><EyeOff size={13} /> <span className="hidden sm:inline">Hidden</span></>}
               </button>
               <button className="btn btn-ghost btn-sm" type="button" aria-expanded={open === s.id} aria-label="Edit section" onClick={() => setOpen(open === s.id ? null : s.id)}>
                 Edit <ChevronDown size={13} className={cn("transition-transform", open === s.id && "rotate-180")} />

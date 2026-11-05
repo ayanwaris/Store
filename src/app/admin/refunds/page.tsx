@@ -25,7 +25,7 @@ export default async function AdminRefunds() {
         Approving revokes the delivered keys, reverses the seller and commission ledger entries, and notifies the buyer.
       </p>
       {rows.length === 0 ? (
-        <div className="card mt-5 p-10 text-center text-sm text-mute">No refund requests. Healthy marketplace.</div>
+        <div className="card mt-5 p-6 text-center text-sm text-mute sm:p-10">No refund requests. Healthy marketplace.</div>
       ) : (
         <div className="mt-5 space-y-3">
           {rows.map((r) => (

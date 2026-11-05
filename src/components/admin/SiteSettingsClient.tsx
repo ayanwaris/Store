@@ -361,7 +361,7 @@ function NewsletterTab({ initial }: { initial: NewsletterConfig }) {
         </div>
         <p className="mt-1 text-xs text-faint">Addresses are stored lower-cased and de-duplicated. Latest 500 shown.</p>
         <div className="mt-3 max-h-80 overflow-auto rounded-lg border border-line">
-          <table className="table-x">
+          <table className="table-x min-w-[24rem]">
             <thead><tr><th>Email</th><th>Source</th><th>Joined</th><th /></tr></thead>
             <tbody>
               {subs?.subscribers.map((s) => (
@@ -402,7 +402,7 @@ export default function SiteSettingsClient({ theme, promo, ads, newsletter }: {
   }, []);
   return (
     <div className="mt-5">
-      <div role="tablist" className="no-scrollbar mb-5 flex gap-1 overflow-x-auto border-b border-line">
+      <div role="tablist" className="no-scrollbar fade-r mb-5 flex gap-1 overflow-x-auto border-b border-line pr-4">
         {TABS.map((t) => (
           <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => { setTab(t.id); history.replaceState(null, "", `#${t.id}`); }}
             className={cn("shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition", tab === t.id ? "border-brand text-brand" : "border-transparent text-mute hover:text-ink")}>

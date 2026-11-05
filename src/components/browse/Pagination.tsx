@@ -23,7 +23,18 @@ export default function Pagination({ basePath, sp, page, pages }: {
     return qs ? `${basePath}?${qs}` : basePath;
   };
   return (
-    <nav className="mt-8 flex flex-wrap items-center justify-center gap-1.5" aria-label="Pagination">
+    <>
+    {/* phones: compact Prev / Page x of y / Next */}
+    <nav className="mt-6 flex items-center justify-between gap-2 sm:hidden" aria-label="Pagination">
+      {page > 1
+        ? <Link href={href(page - 1)} className="btn btn-outline"><ChevronLeft size={16} /> Prev</Link>
+        : <span className="btn btn-outline opacity-40" aria-hidden><ChevronLeft size={16} /> Prev</span>}
+      <span className="text-sm text-mute">Page <strong className="text-ink">{page}</strong> of {pages}</span>
+      {page < pages
+        ? <Link href={href(page + 1)} className="btn btn-outline">Next <ChevronRight size={16} /></Link>
+        : <span className="btn btn-outline opacity-40" aria-hidden>Next <ChevronRight size={16} /></span>}
+    </nav>
+    <nav className="mt-8 hidden flex-wrap items-center justify-center gap-1.5 sm:flex" aria-label="Pagination">
       {page > 1
         ? <Link href={href(page - 1)} className="btn btn-outline btn-sm px-2" aria-label="Previous page"><ChevronLeft size={16} /></Link>
         : <span className="btn btn-outline btn-sm px-2 opacity-40" aria-hidden><ChevronLeft size={16} /></span>}
@@ -35,5 +46,6 @@ export default function Pagination({ basePath, sp, page, pages }: {
         ? <Link href={href(page + 1)} className="btn btn-outline btn-sm px-2" aria-label="Next page"><ChevronRight size={16} /></Link>
         : <span className="btn btn-outline btn-sm px-2 opacity-40" aria-hidden><ChevronRight size={16} /></span>}
     </nav>
+    </>
   );
 }

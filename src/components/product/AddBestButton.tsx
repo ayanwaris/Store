@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export default function AddBestButton({ offerId }: { offerId: string }) {
+export default function AddBestButton({ offerId, className }: { offerId: string; className?: string }) {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   return (
     <button
-      className="btn btn-primary"
+      className={cn("btn btn-primary", className)}
       disabled={busy}
       onClick={async () => {
         setBusy(true);

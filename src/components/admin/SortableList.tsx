@@ -61,7 +61,7 @@ export default function SortableList<T extends { id: string }>({
                   onDragEnd={() => { setFrom(null); setOver(null); }}
                   title="Drag to reorder"
                   aria-hidden="true"
-                  className={cn("cursor-grab rounded-md p-1 text-faint hover:bg-white/4 hover:text-ink active:cursor-grabbing", disabled && "pointer-events-none opacity-40")}
+                  className={cn("cursor-grab rounded-md p-1 text-faint hover:bg-white/4 hover:text-ink active:cursor-grabbing [@media(pointer:coarse)]:hidden", disabled && "pointer-events-none opacity-40")}
                 >
                   <GripVertical size={16} />
                 </span>

@@ -15,9 +15,9 @@ export default async function PayoutsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="card flex flex-wrap items-center gap-5 p-6">
-        <span className="grid h-12 w-12 place-items-center rounded-xl bg-mint/15 text-mint"><Banknote size={20} /></span>
-        <div className="flex-1">
+      <div className="card flex flex-wrap items-center gap-4 p-4 sm:gap-5 sm:p-6">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-mint/15 text-mint"><Banknote size={20} /></span>
+        <div className="min-w-0 flex-1">
           <p className="text-xs font-bold uppercase tracking-wider text-faint">Withdrawable balance</p>
           <p className="font-display text-3xl font-bold text-mint">{fmtEUR(seller.balance)}</p>
         </div>
@@ -29,26 +29,28 @@ export default async function PayoutsPage() {
       </p>
 
       <div className="card overflow-hidden">
-        <div className="border-b border-line px-5 py-4">
+        <div className="border-b border-line px-4 py-3.5 sm:px-5 sm:py-4">
           <h2 className="font-display font-bold">Payout history</h2>
         </div>
         {list.length === 0 ? (
           <p className="p-6 text-sm text-mute">No payouts requested yet.</p>
         ) : (
-          <table className="table-x">
+          <div className="p-3 sm:p-0">
+          <table className="table-x table-stack">
             <thead><tr><th>Requested</th><th>Method</th><th>Status</th><th>Processed</th><th className="text-right">Amount</th></tr></thead>
             <tbody>
               {list.map((p) => (
                 <tr key={p.id}>
-                  <td className="text-mute">{formatDate(p.createdAt)}</td>
-                  <td className="text-mute">{p.method.replace("_", " ")}</td>
-                  <td><span className={`chip border text-[10px] ${statusTone(p.status)}`}>{p.status}</span></td>
-                  <td className="text-mute">{p.processedAt ? formatDate(p.processedAt) : "—"}</td>
-                  <td className="text-right font-display font-bold">{fmtEUR(p.amount)}</td>
+                  <td data-label="Requested" className="text-mute">{formatDate(p.createdAt)}</td>
+                  <td data-label="Method" className="text-mute">{p.method.replace("_", " ")}</td>
+                  <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(p.status)}`}>{p.status}</span></td>
+                  <td data-label="Processed" className="text-mute">{p.processedAt ? formatDate(p.processedAt) : "—"}</td>
+                  <td data-label="Amount" className="text-right font-display font-bold">{fmtEUR(p.amount)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

@@ -24,14 +24,14 @@ export default async function SellerOrdersPage() {
       <h2 className="font-display text-xl font-bold">Sales</h2>
       <p className="mt-0.5 text-sm text-faint">Delivered items (including refunded), newest first.</p>
       {rows.length === 0 ? (
-        <div className="card mt-5 flex flex-col items-center p-12 text-center">
+        <div className="card mt-5 flex flex-col items-center p-8 text-center sm:p-12">
           <ShoppingBag size={36} className="text-faint" />
           <p className="mt-3 font-semibold">No sales yet</p>
           <p className="mt-1 text-sm text-mute">Your first sale lands here the moment a payment completes.</p>
         </div>
       ) : (
-        <div className="card mt-5 overflow-x-auto">
-          <table className="table-x min-w-[680px]">
+        <div className="card mt-5 overflow-x-auto p-3 sm:p-0">
+          <table className="table-x table-stack min-w-[680px]">
             <thead>
               <tr><th>Date</th><th>Product</th><th>Order</th><th>Buyer</th><th>Qty</th><th>Gross</th><th>Commission</th><th className="text-right">Net</th><th></th></tr>
             </thead>
@@ -45,14 +45,14 @@ export default async function SellerOrdersPage() {
                 const net = gross - commission;
                 return (
                   <tr key={String(r.id)}>
-                    <td className="text-mute">{formatDate(String(r.createdAt))}</td>
-                    <td className="font-medium">{String(r.title)}</td>
-                    <td><span className="text-xs text-mute">{String(r.number)}</span></td>
-                    <td className="text-mute">{String(r.buyerName)}</td>
-                    <td>{qty}</td>
-                    <td>{fmtEUR(gross)}</td>
-                    <td className="text-faint">−{fmtEUR(commission)}</td>
-                    <td className={`text-right font-display font-bold ${r.status === "refunded" ? "text-rose-300 line-through" : "text-mint"}`}>
+                    <td data-label="Date" className="text-mute">{formatDate(String(r.createdAt))}</td>
+                    <td data-full className="font-medium">{String(r.title)}</td>
+                    <td data-label="Order"><span className="text-xs text-mute">{String(r.number)}</span></td>
+                    <td data-label="Buyer" className="text-mute">{String(r.buyerName)}</td>
+                    <td data-label="Qty">{qty}</td>
+                    <td data-label="Gross">{fmtEUR(gross)}</td>
+                    <td data-label="Commission" className="text-faint">−{fmtEUR(commission)}</td>
+                    <td data-label="Net" className={`text-right font-display font-bold ${r.status === "refunded" ? "text-rose-300 line-through" : "text-mint"}`}>
                       {fmtEUR(net)}
                     </td>
                     <td className="text-right">

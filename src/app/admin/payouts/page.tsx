@@ -22,25 +22,25 @@ export default async function AdminPayouts() {
       <p className="mt-0.5 text-sm text-faint">
         {fmtEUR(pendingTotal)} pending settlement. Approving marks the wire as sent; rejecting restores the seller balance.
       </p>
-      <div className="card mt-5 overflow-x-auto">
-        <table className="table-x min-w-[760px]">
+      <div className="card mt-5 overflow-x-auto p-3 sm:p-0">
+        <table className="table-x table-stack min-w-[760px]">
           <thead><tr><th>Store</th><th>Requested</th><th>Method</th><th>Status</th><th>Processed</th><th className="text-right">Amount</th><th className="text-right">Actions</th></tr></thead>
           <tbody>
             {rows.length === 0 && (
-              <tr><td colSpan={7} className="text-center text-mute">No payout requests.</td></tr>
+              <tr><td data-full colSpan={7} className="text-center text-mute">No payout requests.</td></tr>
             )}
             {rows.map((r) => (
               <tr key={String(r.id)} className={r.status === "pending" ? "bg-brand/[0.03]" : ""}>
-                <td>
+                <td data-full>
                   <p className="font-semibold">{String(r.storeName)}</p>
                   <p className="text-xs text-faint">{String(r.ownerEmail)}</p>
                 </td>
-                <td className="text-mute">{formatDate(String(r.createdAt))}</td>
-                <td className="text-mute">{String(r.method).replace("_", " ")}</td>
-                <td><span className={`chip border text-[10px] ${statusTone(String(r.status))}`}>{String(r.status)}</span></td>
-                <td className="text-mute">{r.processedAt ? formatDate(String(r.processedAt)) : "—"}</td>
-                <td className="text-right font-display font-bold">{fmtEUR(Number(r.amount))}</td>
-                <td className="text-right">{r.status === "pending" && <PayoutActions id={String(r.id)} />}</td>
+                <td data-label="Requested" className="text-mute">{formatDate(String(r.createdAt))}</td>
+                <td data-label="Method" className="text-mute">{String(r.method).replace("_", " ")}</td>
+                <td data-label="Status"><span className={`chip border text-[10px] ${statusTone(String(r.status))}`}>{String(r.status)}</span></td>
+                <td data-label="Processed" className="text-mute">{r.processedAt ? formatDate(String(r.processedAt)) : "—"}</td>
+                <td data-label="Amount" className="text-right font-display font-bold">{fmtEUR(Number(r.amount))}</td>
+                <td data-label="Actions" className="text-right">{r.status === "pending" && <PayoutActions id={String(r.id)} />}</td>
               </tr>
             ))}
           </tbody>

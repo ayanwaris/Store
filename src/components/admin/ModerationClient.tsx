@@ -138,7 +138,7 @@ export default function ModerationClient({ reviews, tickets }: { reviews: Review
                   </div>
                   {t.status !== "closed" && (
                     <div className="mt-3 flex gap-2">
-                      <input className="input flex-1 text-sm" placeholder="Reply as support…" value={reply}
+                      <input className="input min-w-0 flex-1 text-sm" enterKeyHint="send" placeholder="Reply as support…" value={reply}
                         onChange={(e) => setReply(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendReply()} />
                       <button className="btn btn-primary btn-sm" onClick={sendReply} disabled={busyId === openId}>
                         {busyId === openId ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}

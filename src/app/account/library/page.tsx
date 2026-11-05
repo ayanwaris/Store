@@ -41,7 +41,7 @@ export default async function LibraryPage() {
         <p className="mt-0.5 text-sm text-faint">Your permanent library — keys stay redeemable here forever.</p>
       </div>
       {owned.length === 0 ? (
-        <div className="card flex flex-col items-center p-12 text-center">
+        <div className="card flex flex-col items-center p-8 text-center sm:p-12">
           <KeyRound size={36} className="text-faint" />
           <p className="mt-3 font-semibold">Nothing in the vault yet</p>
           <p className="mt-1 text-sm text-mute">Completed orders land here with instant key reveal.</p>
@@ -52,21 +52,24 @@ export default async function LibraryPage() {
           {owned.map((it) => {
             const ks = keys.filter((k) => k.orderItemId === it.itemId);
             return (
-              <div key={it.itemId} className="card flex flex-wrap gap-4 p-4">
-                <Link href={`/product/${it.slug}`} className="shrink-0">
-                  <CoverArt title={it.title} hue={it.coverHue} platform={it.platform} kind={it.kind} className="h-24 w-[76px] rounded-lg" />
+              <div key={it.itemId} className="card grid grid-cols-[auto_1fr] gap-x-3 gap-y-2.5 p-4 sm:gap-x-4">
+                <Link href={`/product/${it.slug}`} className="shrink-0 sm:row-span-2">
+                  <CoverArt title={it.title} hue={it.coverHue} platform={it.platform} kind={it.kind} className="h-20 w-16 rounded-lg sm:h-24 sm:w-[76px]" />
                 </Link>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                     <Link href={`/product/${it.slug}`} className="font-semibold hover:text-brand-bright">{it.title}</Link>
                     <span className="text-xs text-faint">
                       {fmtEUR(it.price)} · {it.sellerName} · {it.paidAt ? formatDate(it.paidAt) : ""}
                     </span>
                   </div>
-                  <div className="mt-2.5 space-y-2">
+                </div>
+                {/* phones: keys use the full card width so long codes stay readable */}
+                <div className="col-span-2 min-w-0 sm:col-span-1">
+                  <div className="space-y-2">
                     {ks.map((k, i) => <KeyReveal key={i} code={k.code} revoked={k.status === "revoked"} />)}
                   </div>
-                  <Link href={`/order/${it.orderNumber}`} className="mt-2 inline-block text-xs text-brand-bright hover:underline">
+                  <Link href={`/order/${it.orderNumber}`} className="mt-2 inline-block py-1 text-xs text-brand-bright hover:underline">
                     View order {it.orderNumber} →
                   </Link>
                 </div>

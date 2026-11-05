@@ -54,15 +54,24 @@ export default function OfferTable({ offers }: { offers: OfferRow[] }) {
         {offers.map((o, i) => (
           <div key={o.id} className={cn("rounded-xl border p-3.5", i === 0 ? "border-brand/40 bg-brand/5" : "border-line bg-raised/40")}>
             <div className="flex items-center justify-between gap-3">
-              <Link href={`/store/${o.sellerSlug}`} className="text-sm font-bold hover:text-brand-bright">{o.sellerName}</Link>
-              <span className="text-lg font-bold font-display">{fmtEUR(o.price)}</span>
+              <Link href={`/store/${o.sellerSlug}`} className="min-w-0 truncate text-sm font-bold hover:text-brand-bright">{o.sellerName}</Link>
+              <span className="shrink-0 text-lg font-bold font-display">{fmtEUR(o.price)}</span>
             </div>
             <p className="mt-1 text-xs text-mint flex items-center gap-1"><CheckCircle2 size={11} /> {o.sellerRating.toFixed(1)}% positive ({fmtNum(o.sellerRatings)})</p>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {i === 0 && <span className="chip border-brand/40 bg-brand/10 text-brand-bright text-[10px]">Best offer</span>}
+              <span className="chip">{o.region}</span>
+              {o.stock < 10
+                ? <span className="chip border-amber-400/30 bg-amber-400/10 text-amber-300">{o.stock} left</span>
+                : <span className="chip text-mint border-mint/20 bg-mint/5">In stock</span>}
+            </div>
             <div className="mt-2.5 flex gap-2">
-              <button className="btn btn-outline btn-sm flex-1" disabled={busy !== null} onClick={() => add(o.id, false)}>
+              <button className="btn btn-outline flex-1" disabled={busy !== null} onClick={() => add(o.id, false)}>
                 {busy === o.id ? <Loader2 size={14} className="animate-spin" /> : <ShoppingCart size={14} />} Add
               </button>
-              <button className="btn btn-primary btn-sm flex-1" disabled={busy !== null} onClick={() => add(o.id, true)}>Buy now</button>
+              <button className="btn btn-primary flex-1" disabled={busy !== null} onClick={() => add(o.id, true)}>
+                {busy === o.id + ":buy" ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />} Buy now
+              </button>
             </div>
           </div>
         ))}

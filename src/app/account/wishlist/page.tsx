@@ -25,7 +25,7 @@ export default async function WishlistPage() {
       <h2 className="font-display text-xl font-bold">Wishlist</h2>
       <p className="mt-0.5 text-sm text-faint">{cards.length} saved product{cards.length === 1 ? "" : "s"}</p>
       {cards.length === 0 ? (
-        <div className="card mt-5 flex flex-col items-center p-12 text-center">
+        <div className="card mt-5 flex flex-col items-center p-8 text-center sm:p-12">
           <Heart size={36} className="text-faint" />
           <p className="mt-3 font-semibold">Your wishlist is empty</p>
           <p className="mt-1 text-sm text-mute">Tap the heart on any product to watch it here.</p>

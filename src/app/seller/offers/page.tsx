@@ -27,7 +27,7 @@ export default async function SellerOffersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-xl font-bold">My offers</h2>
           <p className="mt-0.5 text-sm text-faint">{rows.length} listing{rows.length === 1 ? "" : "s"} · edit price, toggle visibility, upload keys</p>

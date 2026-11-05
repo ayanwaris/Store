@@ -17,6 +17,7 @@ import ReviewForm from "@/components/product/ReviewForm";
 import Tabs from "@/components/product/Tabs";
 import ProductCard from "@/components/ProductCard";
 import AddBestButton from "@/components/product/AddBestButton";
+import StickyBuyBar from "@/components/product/StickyBuyBar";
 import { ChevronRight, Globe2, MonitorSmartphone, ShieldCheck, Zap, LifeBuoy, Layers } from "lucide-react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -103,7 +104,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }));
 
   return (
-    <div className="container-x py-6 md:py-8">
+    <div className="container-x pb-24 pt-6 md:py-8">
       {/* breadcrumbs */}
       <nav className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-faint">
         <Link href="/" className="hover:text-mute">Home</Link>
@@ -111,18 +112,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         {cat && (
           <>
             <Link href={`/category/${cat.slug}`} className="hover:text-mute">{cat.name}</Link>
-            <ChevronRight size={11} />
+            <ChevronRight size={11} className="hidden sm:block" />
           </>
         )}
-        <span className="text-mute">{product.title}</span>
+        <span className="hidden text-mute sm:inline">{product.title}</span>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-[360px_1fr] xl:grid-cols-[400px_1fr]">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[360px_1fr] xl:grid-cols-[400px_1fr]">
         {/* left: cover */}
         <div>
           <CoverArt
             title={product.title} hue={product.coverHue} platform={product.platform} kind={product.kind}
-            className="aspect-[4/4.6] w-full rounded-2xl shadow-2xl shadow-black/50"
+            className="mx-auto aspect-[4/4.6] w-44 rounded-2xl shadow-2xl shadow-black/50 sm:w-56 lg:w-full"
           />
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             {[
@@ -130,7 +131,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               { icon: ShieldCheck, t: "Buyer protection" },
               { icon: LifeBuoy, t: "24/7 support" },
             ].map((f) => (
-              <div key={f.t} className="card px-2 py-3">
+              <div key={f.t} className="card px-1.5 py-3 sm:px-2">
                 <f.icon size={16} className="mx-auto text-brand" />
                 <p className="mt-1.5 text-[11px] font-medium text-mute">{f.t}</p>
               </div>
@@ -149,7 +150,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           <h1 className="mt-3 font-display text-2xl font-bold leading-tight md:text-3xl">{product.title}</h1>
           {product.subtitle && <p className="mt-1 text-sm text-mute md:text-base">{product.subtitle}</p>}
-          <div className="mt-2.5 flex items-center gap-4">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1">
             <RatingStars value={Number(product.ratingAvg)} size={15} />
             <span className="text-xs text-faint">{fmtNum(product.ratingCount)} reviews</span>
             <span className="text-xs text-faint">·</span>
@@ -157,18 +158,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
 
           {/* price panel */}
-          <div className="card mt-5 flex flex-wrap items-center gap-4 p-5">
+          <div id="buy-panel" className="card mt-5 flex flex-wrap items-center gap-4 p-4 sm:p-5">
             <div>
               {minPrice != null ? (
                 <>
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">Best price</p>
-                  <p className="font-display text-3xl font-bold">
+                  <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 font-display text-3xl font-bold">
                     {fmtEUR(minPrice)}
                     {product.rrp > minPrice && (
-                      <span className="ml-2.5 text-base font-medium text-faint line-through">{fmtEUR(product.rrp)}</span>
+                      <span className="text-base font-medium text-faint line-through">{fmtEUR(product.rrp)}</span>
                     )}
                     {discount > 0 && (
-                      <span className="ml-2.5 rounded-lg bg-brand/15 px-2 py-0.5 align-middle text-sm font-bold text-brand-bright">−{discount}%</span>
+                      <span className="rounded-lg bg-brand/15 px-2 py-0.5 align-middle text-sm font-bold text-brand-bright">−{discount}%</span>
                     )}
                   </p>
                 </>
@@ -176,15 +177,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <p className="font-display text-xl font-bold text-faint">Currently out of stock</p>
               )}
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="flex w-full items-stretch gap-2 sm:ml-auto sm:w-auto sm:items-center">
               <WishlistButton productId={product.id} active={wishlisted} loggedIn={!!user} />
-              {offerRows[0] && <AddBestButton offerId={offerRows[0].id} />}
+              {offerRows[0] && <AddBestButton offerId={offerRows[0].id} className="flex-1 sm:flex-none" />}
             </div>
           </div>
 
           {/* offers */}
           <div className="card mt-5 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3.5 sm:px-5">
               <h2 className="font-display text-sm font-bold uppercase tracking-wider text-mute">
                 All offers · {offerRows.length} seller{offerRows.length === 1 ? "" : "s"}
               </h2>
@@ -194,6 +195,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </div>
+
+      {/* phones: price + Add to cart stay reachable once the price panel has scrolled out of view */}
+      {offerRows[0] && minPrice != null && <StickyBuyBar targetId="buy-panel" price={minPrice} offerId={offerRows[0].id} />}
 
       {/* tabs */}
       <div className="mt-10">
@@ -287,7 +291,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       {related.length > 0 && (
         <section className="mt-10">
           <h2 className="font-display text-xl font-bold">You might also like</h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
             {related.map((p) => <ProductCard key={p.id} p={p} />)}
           </div>
         </section>

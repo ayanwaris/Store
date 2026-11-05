@@ -54,9 +54,9 @@ export default function ProductCreateForm({ categories, trigger }: {
         <button className="btn btn-primary" onClick={() => setOpen(true)}>New product</button>
       )}
       {open && (
-        <div className="fixed inset-0 z-50 grid place-items-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex justify-center overflow-y-auto p-3 sm:p-4">
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="card animate-pop relative my-8 w-full max-w-xl p-6">
+          <div className="card animate-pop relative my-auto w-full max-w-xl p-4 sm:p-6">
             <button className="btn btn-ghost btn-sm absolute right-3 top-3" onClick={() => setOpen(false)}><X size={16} /></button>
             <h3 className="font-display text-lg font-bold">New catalog product</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">

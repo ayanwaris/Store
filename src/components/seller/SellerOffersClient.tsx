@@ -86,7 +86,7 @@ export default function SellerOffersClient({ offers }: { offers: Offer[] }) {
 
   if (!offers.length) {
     return (
-      <div className="card flex flex-col items-center p-12 text-center">
+      <div className="card flex flex-col items-center p-8 text-center sm:p-12">
         <KeyRound size={36} className="text-faint" />
         <p className="mt-3 font-semibold">No listings yet</p>
         <p className="mt-1 text-sm text-mute">Create your first listing and upload keys to start selling.</p>
@@ -97,33 +97,33 @@ export default function SellerOffersClient({ offers }: { offers: Offer[] }) {
 
   return (
     <>
-      <div className="card overflow-x-auto">
-        <table className="table-x min-w-[640px]">
+      <div className="card overflow-x-auto p-3 sm:p-0">
+        <table className="table-x table-stack min-w-[640px]">
           <thead>
             <tr><th>Product</th><th>Price</th><th>Region</th><th>Stock</th><th>Sold</th><th>Status</th><th className="text-right">Actions</th></tr>
           </thead>
           <tbody>
             {offers.map((o) => (
               <tr key={o.id} className={cn(!o.active && "opacity-50")}>
-                <td>
+                <td data-full>
                   <Link href={`/product/${o.productSlug}`} className="font-semibold hover:text-brand-bright">{o.productTitle}</Link>
                   <p className="text-[11px] text-faint">{o.platform} · RRP {formatter(o.rrp)}</p>
                 </td>
-                <td className="font-display font-bold">{formatter(o.price)}</td>
-                <td><span className="chip">{o.region}</span></td>
-                <td>
+                <td data-label="Price" className="font-display font-bold">{formatter(o.price)}</td>
+                <td data-label="Region"><span className="chip">{o.region}</span></td>
+                <td data-label="Stock">
                   <span className={cn("chip", o.stockCount === 0 ? "border-rose-400/30 text-rose-300" : o.stockCount <= 5 ? "border-amber-400/30 text-amber-300" : "text-mint")}>
                     {o.stockCount}
                   </span>
                 </td>
-                <td className="text-mute">{o.soldCount}</td>
-                <td>
+                <td data-label="Sold" className="text-mute">{o.soldCount}</td>
+                <td data-label="Status">
                   <span className={cn("chip border", o.active ? "border-mint/25 bg-mint/5 text-mint" : "border-line text-faint")}>
                     {o.active ? "Live" : "Hidden"}
                   </span>
                 </td>
-                <td>
-                  <div className="flex justify-end gap-1.5">
+                <td data-full>
+                  <div className="grid grid-cols-3 gap-2 sm:flex sm:justify-end sm:gap-1.5">
                     <button className="btn btn-outline btn-sm" onClick={() => { setEdit(o); setPrice(String(o.price)); setRegion(o.region); }}>
                       <Pencil size={13} /> Edit
                     </button>
@@ -143,16 +143,16 @@ export default function SellerOffersClient({ offers }: { offers: Offer[] }) {
 
       {/* edit modal */}
       {edit && (
-        <div className="fixed inset-0 z-50 grid place-items-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setEdit(null)} />
-          <div className="card animate-pop relative w-full max-w-sm p-6">
+          <div className="card animate-pop relative max-h-[92dvh] w-full max-w-sm overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] max-sm:rounded-b-none sm:p-6">
             <button className="btn btn-ghost btn-sm absolute right-3 top-3" onClick={() => setEdit(null)}><X size={16} /></button>
             <h3 className="font-display font-bold">Edit offer</h3>
             <p className="mt-0.5 line-clamp-1 text-sm text-mute">{edit.productTitle}</p>
             <div className="mt-4 space-y-3">
               <div>
                 <label className="label">Price (EUR)</label>
-                <input className="input" type="number" step="0.01" min={0.49} max={5000} value={price} onChange={(e) => setPrice(e.target.value)} />
+                <input className="input" type="number" inputMode="decimal" step="0.01" min={0.49} max={5000} value={price} onChange={(e) => setPrice(e.target.value)} />
               </div>
               <div>
                 <label className="label">Region</label>
@@ -170,9 +170,9 @@ export default function SellerOffersClient({ offers }: { offers: Offer[] }) {
 
       {/* keys modal */}
       {keysFor && (
-        <div className="fixed inset-0 z-50 grid place-items-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setKeysFor(null)} />
-          <div className="card animate-pop relative w-full max-w-lg p-6">
+          <div className="card animate-pop relative max-h-[92dvh] w-full max-w-lg overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] max-sm:rounded-b-none sm:p-6">
             <button className="btn btn-ghost btn-sm absolute right-3 top-3" onClick={() => setKeysFor(null)}><X size={16} /></button>
             <h3 className="font-display font-bold">Inventory keys</h3>
             <p className="mt-0.5 line-clamp-1 text-sm text-mute">{keysFor.productTitle}</p>

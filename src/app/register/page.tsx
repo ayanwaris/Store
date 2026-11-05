@@ -9,7 +9,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const { next } = await searchParams;
   if (await getSessionUser()) redirect(next ?? "/");
   return (
-    <div className="container-x flex justify-center py-16">
+    <div className="container-x flex justify-center py-8 sm:py-16">
       <div className="w-full max-w-md"><RegisterForm next={next} /></div>
     </div>
   );

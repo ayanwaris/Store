@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, ArrowRight } from "lucide-react";
+import { Search, Loader2, ArrowRight, X } from "lucide-react";
 import { cn, fmtEUR } from "@/lib/utils";
 
 type Suggestion = {
@@ -10,7 +10,13 @@ type Suggestion = {
   categories: Array<{ name: string; slug: string }>;
 };
 
-export default function SearchBar({ variant = "nav" }: { variant?: "nav" | "hero" }) {
+export default function SearchBar({ variant = "nav", autoFocus = false, onDone }: {
+  variant?: "nav" | "hero";
+  /** focus the field as soon as it appears (used by the phone search row) */
+  autoFocus?: boolean;
+  /** called after the visitor navigates somewhere, so a parent can close the search row */
+  onDone?: () => void;
+}) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,11 +27,11 @@ export default function SearchBar({ variant = "nav" }: { variant?: "nav" | "hero
   const timer = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
-    const onDoc = (e: MouseEvent) => {
+    const onDoc = (e: PointerEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+    document.addEventListener("pointerdown", onDoc);
+    return () => document.removeEventListener("pointerdown", onDoc);
   }, []);
 
   useEffect(() => {
@@ -51,6 +57,7 @@ export default function SearchBar({ variant = "nav" }: { variant?: "nav" | "hero
   const items = data.products;
   const go = (href: string) => {
     setOpen(false);
+    onDone?.();
     router.push(href);
   };
   const submit = () => {
@@ -75,6 +82,12 @@ export default function SearchBar({ variant = "nav" }: { variant?: "nav" | "hero
           onChange={(e) => { setQ(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           aria-label="Search products"
+          autoFocus={autoFocus}
+          inputMode="search"
+          enterKeyHint="search"
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck={false}
           onKeyDown={(e) => {
             if (e.key === "Escape") setOpen(false);
             if (e.key === "ArrowDown") { e.preventDefault(); setHi((h) => Math.min(h + 1, items.length - 1)); }
@@ -91,13 +104,22 @@ export default function SearchBar({ variant = "nav" }: { variant?: "nav" | "hero
           )}
         />
         {loading && <Loader2 size={16} className="mr-4 animate-spin text-faint" />}
+        {!loading && q && (
+          <button
+            type="button" aria-label="Clear search"
+            onClick={() => { setQ(""); setOpen(false); }}
+            className="mr-2 grid h-8 w-8 shrink-0 place-items-center rounded-lg text-faint transition hover:text-ink sm:hidden"
+          >
+            <X size={16} />
+          </button>
+        )}
         {variant === "hero" && (
           <button type="submit" className="btn btn-primary mr-2 hidden sm:inline-flex">Search</button>
         )}
       </form>
 
       {open && q.trim() && (
-        <div className="card animate-pop absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden shadow-2xl shadow-black/70">
+        <div className="card animate-pop absolute left-0 right-0 top-full z-50 mt-2 max-h-[65dvh] overflow-y-auto overscroll-contain shadow-2xl shadow-black/70">
           {data.categories.length > 0 && (
             <div className="flex flex-wrap gap-1.5 border-b border-line-soft px-3 py-2.5">
               {data.categories.map((c) => (
@@ -116,7 +138,7 @@ export default function SearchBar({ variant = "nav" }: { variant?: "nav" | "hero
               onMouseEnter={() => setHi(i)}
               onClick={() => go(`/product/${p.slug}`)}
               className={cn(
-                "flex w-full items-center gap-3 px-3 py-2.5 text-left transition",
+                "flex w-full items-center gap-3 px-3 py-3 text-left transition sm:py-2.5",
                 hi === i ? "bg-white/5" : "",
               )}
             >
