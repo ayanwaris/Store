@@ -64,7 +64,7 @@ export default function Footer({ categories, newsletter, hideNewsletterOnHome }:
 
       <div className="border-t border-line">
         <div className="container-x flex flex-col items-center justify-between gap-3 py-5 text-center text-xs text-faint md:flex-row md:text-left">
-          <p>© {new Date().getFullYear()} KeyHaven — demo marketplace with an original, fictional catalog. Not affiliated with G2A.</p>
+          <p>© {new Date().getFullYear()} KeyHaven — demo marketplace with an original, fictional catalog.</p>
           <div className="flex flex-wrap justify-center gap-1.5">
             {["VISA", "MASTERCARD", "PAYPAL", "STRIPE", "RAZORPAY"].map((p) => (
               <span key={p} className="chip text-[10px] font-bold tracking-wider">{p}</span>
