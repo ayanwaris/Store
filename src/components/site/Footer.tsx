@@ -45,7 +45,6 @@ export default function Footer({ categories, newsletter, hideNewsletterOnHome }:
           <p className="mb-3 text-xs font-bold uppercase tracking-wider text-faint">Selling</p>
           <ul className="space-y-0.5 text-sm md:space-y-2">
             <li><Link className="link inline-block py-1.5 md:py-0" href="/sell">Become a seller</Link></li>
-            <li><Link className="link inline-block py-1.5 md:py-0" href="/seller">Seller dashboard</Link></li>
             <li><Link className="link inline-block py-1.5 md:py-0" href="/legal/terms">Seller terms</Link></li>
             <li><Link className="link inline-block py-1.5 md:py-0" href="/legal/terms">Commission &amp; fees</Link></li>
           </ul>
